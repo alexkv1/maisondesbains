@@ -1,0 +1,15 @@
+RewriteEngine On
+RewriteBase /
+
+# Never expose config or the schema.
+<FilesMatch "^(conf\.php|conf\.sample\.php|schema\.sql|composer\.(json|lock))$">
+    Require all denied
+</FilesMatch>
+
+# Pretty routing: /<uri> -> pages/<uri>/index.php when it exists.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{DOCUMENT_ROOT}/pages%{REQUEST_URI}/index.php -f
+RewriteRule ^(.*)$ pages/$1/index.php [L,QSA]
+
+ErrorDocument 404 /404.php

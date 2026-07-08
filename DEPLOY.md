@@ -1,65 +1,81 @@
 # Maison Des Bains — Deployment
 
-A static site (HTML/CSS/JS) served by **Apache** from `/var/www/html` on a VM,
-deployed via **GitHub Actions on push to `main`** — the same pattern as the
-`yuz` repos, minus PHP/DB/composer since there's no backend.
+A PHP/MySQL webshop served by **Apache** from `/var/www/html`, deployed via
+**GitHub Actions on push to `main`** — the same pattern as the `yuz` repos.
 
 ```
-push to main ──▶ GitHub Actions ──▶ rsync public/ ──▶ runner@VM:/home/runner/maison
-                                                   └▶ sudo rsync ──▶ /var/www/html  (Apache)
+push to main ─▶ GitHub Actions ─▶ rsync public/ ─▶ runner@VM:/home/runner/maison
+                                               └▶ sudo rsync ─▶ /var/www/html
+                                               └▶ write conf.php (from secrets)
+                                               └▶ composer install (if Stripe configured)
 ```
 
 ## Layout
 
-| Path                        | Purpose                                              |
-|-----------------------------|------------------------------------------------------|
-| `public/`                   | The deployable site (this is what ends up in webroot)|
-| `.github/workflows/main.yaml` | The deploy pipeline                                |
-| `provision.sh`              | One-time VM setup (Apache, `runner` user, sudoers)   |
+| Path                          | Purpose                                             |
+|-------------------------------|-----------------------------------------------------|
+| `public/`                     | Web root: PHP app + assets (deploys to /var/www/html)|
+| `public/db.php`               | mysqli `DB` wrapper (reads conf.php)                 |
+| `public/api/…`                | JSON endpoints: account, cart, checkout, orders, payments |
+| `public/pages/…`              | product, cart, checkout, account, order, login      |
+| `public/schema.sql`           | MySQL schema + seed catalogue                        |
+| `.github/workflows/main.yaml` | The deploy pipeline                                  |
+| `provision.sh`                | One-time VM setup (Apache, PHP, MySQL, runner user)  |
 
-## One-time setup
+`conf.php` and `vendor/` are **not** committed — `conf.php` is written on the VM
+by the deploy from repo secrets; `vendor/` is built there by composer.
 
-### 1. Provision the VM (once)
+## One-time VM setup
 
-Copy the script up and run it as a sudo-capable user on the fresh VM:
+Run `provision.sh` once (installs Apache+PHP+MySQL, creates the `runner` user
+and deploy key, creates the DB, imports the schema). Set a DB password first:
 
 ```bash
-scp provision.sh <you>@<VM_IP>:~
-ssh <you>@<VM_IP> 'sudo bash provision.sh'
+export DB_PASS='a-strong-password'
+sudo -E bash provision.sh
 ```
 
-This installs Apache, creates the `runner` deploy user, installs the deploy
-public key, grants `runner` passwordless sudo for `rsync`, and serves
-`/var/www/html`. Verify: `curl -I http://<VM_IP>/` → `200`.
+## GitHub secrets
 
-### 2. Create the GitHub repo + secrets
+At **Settings → Secrets and variables → Actions**, set:
+
+| Secret | Value |
+|--------|-------|
+| `SSH_KEY` | private deploy key (`~/.ssh/maison-runner`) |
+| `MAIN_IP` | the VM's public IP |
+| `DB_HOST` | `127.0.0.1` |
+| `DB_USER` | `maison` |
+| `DB_PASS` | the DB password you chose |
+| `DB_NAME` | `maison_des_bains` |
+| `STRIPE_KEY` | Stripe secret key — **leave empty to use mock checkout** |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret (optional) |
+
+## Deploy
 
 ```bash
-gh auth login                                   # if not already
-gh repo create vinder-ab/maison-des-bains --private --source=. --remote=origin
-
-gh secret set SSH_KEY  < ~/.ssh/maison-runner   # the PRIVATE deploy key
-gh secret set MAIN_IP  --body "<VM_IP>"
+git push origin main      # or re-run the workflow from the Actions tab
 ```
 
-The matching **public** key is baked into `provision.sh` (safe to publish);
-the **private** key `~/.ssh/maison-runner` is held only as the `SSH_KEY` secret.
+## Payments
 
-### 3. Deploy
+- **No `STRIPE_KEY`** → the built-in **mock checkout** places the order, marks it
+  paid, and redirects to the confirmation page. The whole flow is demoable.
+- **With `STRIPE_KEY`** → checkout creates a Stripe Checkout Session and redirects
+  to Stripe. Add a webhook in the Stripe dashboard pointing at
+  `https://<host>/api/payments/webhook` (event `checkout.session.completed`) and
+  set `STRIPE_WEBHOOK_SECRET`. Composer pulls `stripe/stripe-php` automatically.
+
+## Local development
 
 ```bash
-git push origin main
+mysql -u root -e "CREATE DATABASE maison_des_bains"
+mysql -u root maison_des_bains < public/schema.sql
+cp public/conf.sample.php public/conf.php      # edit credentials
+php -S 127.0.0.1:8080 -t public public/dev-router.php
 ```
 
-Every push to `main` re-runs the workflow. Watch it with `gh run watch`.
-
-## Deploy keypair
-
-- Private: `~/.ssh/maison-runner`  → GitHub secret `SSH_KEY`
-- Public:  `~/.ssh/maison-runner.pub` → baked into `provision.sh`
-
-## TLS (optional, after DNS points at the VM)
+## TLS (after DNS points at the VM)
 
 ```bash
-ssh <you>@<VM_IP> 'sudo apt-get install -y certbot python3-certbot-apache && sudo certbot --apache'
+sudo apt-get install -y certbot python3-certbot-apache && sudo certbot --apache
 ```

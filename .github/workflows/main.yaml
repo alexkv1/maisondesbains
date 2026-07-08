@@ -19,10 +19,34 @@ jobs:
           ssh-add $HOME/.ssh/id_ed25519
 
       - name: Push site
-        run: rsync -e 'ssh -o StrictHostKeyChecking=no' --archive --delete public/ runner@${{ secrets.MAIN_IP }}:/home/runner/maison
+        run: rsync -e 'ssh -o StrictHostKeyChecking=no' --archive --delete --exclude=vendor/ --exclude=conf.php --exclude=dev-router.php public/ runner@${{ secrets.MAIN_IP }}:/home/runner/maison
 
-      - name: Copy files to web root # Double check file access permissions
-        run: ssh -o StrictHostKeyChecking=no runner@${{ secrets.MAIN_IP }} 'sudo rsync --archive --delete /home/runner/maison/ /var/www/html'
+      - name: Deploy to web root # preserve vendor/ and conf.php on the server
+        run: ssh -o StrictHostKeyChecking=no runner@${{ secrets.MAIN_IP }} 'sudo rsync --archive --delete --exclude=vendor/ --exclude=conf.php /home/runner/maison/ /var/www/html'
+
+      - name: Write config to conf.php
+        run: |
+          ssh -o StrictHostKeyChecking=no runner@${{ secrets.MAIN_IP }} << 'EOF'
+          sudo tee /var/www/html/conf.php > /dev/null <<EOL
+          <?php
+          return [
+              'servername' => '${{ secrets.DB_HOST }}',
+              'username'   => '${{ secrets.DB_USER }}',
+              'password'   => '${{ secrets.DB_PASS }}',
+              'dbname'     => '${{ secrets.DB_NAME }}',
+              'stripe-key' => '${{ secrets.STRIPE_KEY }}',
+              'stripe-webhook-secret' => '${{ secrets.STRIPE_WEBHOOK_SECRET }}',
+          ];
+          EOL
+          EOF
+
+      - name: Install composer dependencies (only if Stripe is configured)
+        run: |
+          ssh -o StrictHostKeyChecking=no runner@${{ secrets.MAIN_IP }} << 'EOF'
+            if command -v composer >/dev/null 2>&1 && [ ! -d /var/www/html/vendor ]; then
+              cd /var/www/html && sudo composer install --no-dev --optimize-autoloader || true
+            fi
+          EOF
 
       - name: Fix permissions after deploy
         run: |

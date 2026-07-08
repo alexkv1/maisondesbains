@@ -1,0 +1,7 @@
+{
+  "name": "maison-des-bains/storefront",
+  "description": "Maison Des Bains — PHP/MySQL webshop",
+  "require": {
+    "stripe/stripe-php": "^13.0"
+  }
+}
