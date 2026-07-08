@@ -80,7 +80,8 @@ function renderDrawer(cart) {
   lastCart = cart;
   paintCount(cart.count);
   if (drawerCount) drawerCount.textContent = `(${cart.count})`;
-  if (drawerTotal) drawerTotal.textContent = gbp(cart.total_cents);
+  // Cart shows items only (+ gift wrap). Delivery is calculated at checkout.
+  if (drawerTotal) drawerTotal.textContent = gbp(cart.subtotal_cents + cart.gift_wrap_cents);
   if (!drawerBody) return;
   if (cart.count === 0) {
     drawerBody.innerHTML = `<p class="drawer__empty">The basket is empty.</p>`;
@@ -187,9 +188,8 @@ function renderCartPage(cart) {
       </div>`).join('');
   }
   const set = (id, v) => { const el = $(id); if (el) el.textContent = v; };
-  set('#sumSubtotal', gbp(cart.subtotal_cents));
-  set('#sumShipping', cart.count === 0 ? '—' : (cart.shipping_cents === 0 ? 'Complimentary' : gbp(cart.shipping_cents)));
-  set('#sumTotal', gbp(cart.total_cents));
+  // Items only (+ gift wrap). Delivery is calculated at checkout.
+  set('#sumSubtotal', gbp(cart.subtotal_cents + cart.gift_wrap_cents));
 }
 
 /* ============================================================
