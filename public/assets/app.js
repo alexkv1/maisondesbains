@@ -202,7 +202,7 @@ function renderCheckoutSummary(cart) {
   lines.innerHTML = cart.items.map(it => `
     <div class="coitem">
       <span class="coitem__q mono">${it.quantity}×</span>
-      <span class="coitem__n">${it.brand} — ${it.name}</span>
+      <span class="coitem__n">${it.brand} — ${it.name} <span class="coitem__size">(${it.size})</span></span>
       <span class="mono">${gbp(it.line_total)}</span>
     </div>`).join('') || `<p class="drawer__empty">Your bag is empty.</p>`;
   const set = (id, v) => { const el = $(id); if (el) el.textContent = v; };

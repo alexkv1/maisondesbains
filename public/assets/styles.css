@@ -561,6 +561,7 @@ em { font-style: italic; }
 .coitem { display: grid; grid-template-columns: auto 1fr auto; gap: 0.8rem; font-size: var(--size-small); align-items: baseline; }
 .coitem__q { color: var(--text-muted); }
 .coitem__n { color: var(--ink); }
+.coitem__size { color: var(--text-muted); }
 
 /* ============================================================
    AUTH PAGE
