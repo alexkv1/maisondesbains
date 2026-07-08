@@ -42,7 +42,7 @@ function getCookie(k) {
 /* ============================================================
    FILTERS (home)
    ============================================================ */
-const CATS = ['All', 'Soap', 'Wash', 'Body'];
+const CATS = ['All', 'Soap', 'Wash', 'Body', 'Set'];
 const filtersEl = $('#filters');
 if (filtersEl) {
   filtersEl.innerHTML = CATS.map((c, i) =>
@@ -80,10 +80,33 @@ function paintCount(count) {
 function cartUnits(cart) { return (cart.items || []).reduce((a, i) => a + i.quantity, 0); }
 function onlyGifts(cart) { return (cart.items || []).length > 0 && cart.count === 0; }
 
+/* Progress toward the next reward (gift / free delivery). */
+function progressMarkup(cart) {
+  if (cart.count === 0) return '';
+  const sub = cart.subtotal_cents, giftT = cart.gift_threshold, freeT = cart.free_threshold;
+  let target, msg;
+  if (cart.free_shipping) {                     // member: delivery free at the member threshold
+    if (sub < giftT) { target = giftT; msg = `Spend ${gbp(giftT - sub)} more for complimentary delivery`; }
+    else { target = sub; msg = 'You’ve unlocked complimentary delivery'; }
+  } else if (sub < giftT) {
+    target = giftT; msg = `Spend ${gbp(giftT - sub)} more for a complimentary gift`;
+  } else if (sub < freeT) {
+    target = freeT; msg = `Spend ${gbp(freeT - sub)} more for complimentary delivery`;
+  } else {
+    target = sub; msg = 'You’ve unlocked complimentary delivery';
+  }
+  const pct = Math.min(100, Math.round((sub / target) * 100));
+  return `<div class="cart-progress__bar"><span style="width:${pct}%"></span></div><p class="cart-progress__msg">${msg}</p>`;
+}
+function renderProgress(cart) {
+  ['#drawerProgress', '#cartPageProgress'].forEach(id => { const el = $(id); if (el) el.innerHTML = progressMarkup(cart); });
+}
+
 function renderDrawer(cart) {
   lastCart = cart;
   const units = cartUnits(cart);
   paintCount(units);
+  renderProgress(cart);
   if (drawerCount) drawerCount.textContent = `(${units})`;
   // Cart shows items only (+ gift wrap). Delivery is calculated at checkout.
   if (drawerTotal) drawerTotal.textContent = gbp(cart.subtotal_cents + cart.gift_wrap_cents);
@@ -218,6 +241,7 @@ function renderCartPage(cart) {
     const note = onlyGifts(cart) ? `<p class="gift-nudge">Add an item to place your order — gifts can't be ordered on their own.</p>` : '';
     cartLines.innerHTML = giftNudge(cart) + note + cart.items.map(it => lineHTML(it, true)).join('');
   }
+  renderProgress(cart);
   const set = (id, v) => { const el = $(id); if (el) el.textContent = v; };
   // Items only (+ gift wrap). Delivery is calculated at checkout.
   set('#sumSubtotal', gbp(cart.subtotal_cents + cart.gift_wrap_cents));

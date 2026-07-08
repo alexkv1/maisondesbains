@@ -159,7 +159,8 @@ VALUES
   ('bal-dafrique-shower-gel', 'Byredo',  'Bal d''Afrique Shower Gel', 'Shower Gel', 'Wash', 'Bergamot · Neroli · Marigold · Vetiver', 'Byredo''s Bal d''Afrique as a shower gel — African marigold, neroli and warm vetiver.', '/assets/img/bal-dafrique-shower-gel.png', NULL, UNIX_TIMESTAMP()),
   ('bal-dafrique-body-lotion','Byredo',  'Bal d''Afrique Body Lotion', 'Body Lotion', 'Body', 'Bergamot · Violet · Vetiver · Musk', 'A supple body lotion of bergamot, violet and vetiver. The 1920s Paris–Africa reverie, worn on skin.', '/assets/img/bal-dafrique-body-lotion.png', NULL, UNIX_TIMESTAMP()),
   ('bal-dafrique-soap',       'Byredo',  'Bal d''Afrique Soap',       'Soap', 'Soap', 'Bergamot · Neroli · Black Amber', 'A milled soap of Bal d''Afrique — bergamot and black amber, kept by the basin.', '/assets/img/bal-dafrique-soap.jpg', NULL, UNIX_TIMESTAMP()),
-  ('bal-dafrique-hand-wash',  'Byredo',  'Bal d''Afrique Hand Wash',  'Hand Wash', 'Wash', 'Bergamot · Neroli · Vetiver · Amber', 'A generous hand wash of Bal d''Afrique. Neroli and vetiver, left on the hands like a signature.', '/assets/img/bal-dafrique-hand-wash.png', NULL, UNIX_TIMESTAMP())
+  ('bal-dafrique-hand-wash',  'Byredo',  'Bal d''Afrique Hand Wash',  'Hand Wash', 'Wash', 'Bergamot · Neroli · Vetiver · Amber', 'A generous hand wash of Bal d''Afrique. Neroli and vetiver, left on the hands like a signature.', '/assets/img/bal-dafrique-hand-wash.png', NULL, UNIX_TIMESTAMP()),
+  ('bal-dafrique-ritual',     'Byredo',  'Bal d''Afrique Ritual',     'Three-piece set', 'Set', 'Bergamot · Neroli · Marigold · Vetiver', 'The complete Bal d''Afrique ritual, gathered as one — Shower Gel (50 ml), Body Lotion (50 ml) and Soap (30 g). Thirty-eight euro apart; thirty-three together.', '/assets/img/bal-dafrique-shower-gel.png', 'Set', UNIX_TIMESTAMP())
 ON DUPLICATE KEY UPDATE
   `brand`=VALUES(`brand`), `name`=VALUES(`name`), `line`=VALUES(`line`), `category`=VALUES(`category`),
   `notes`=VALUES(`notes`), `blurb`=VALUES(`blurb`), `image`=VALUES(`image`), `badge`=VALUES(`badge`);
@@ -180,7 +181,8 @@ FROM (
   SELECT 'bal-dafrique-body-lotion',        'bal-dafrique-body-lotion-225ml',       '225 ml',    0,   0,   'MDB·BY—502M', 0,   1, 2 UNION ALL
   SELECT 'bal-dafrique-body-lotion',        'bal-dafrique-body-lotion-450ml',       '450 ml',    0,   0,   'MDB·BY—502L', 0,   1, 3 UNION ALL
   SELECT 'bal-dafrique-soap',               'bal-dafrique-soap-30g',                '30 g',      800,  89,  'MDB·BY—030',  280, 0, 1 UNION ALL
-  SELECT 'bal-dafrique-hand-wash',          'bal-dafrique-hand-wash-450ml',         '450 ml',    3900, 449, 'MDB·BY—450',  15,  0, 1
+  SELECT 'bal-dafrique-hand-wash',          'bal-dafrique-hand-wash-450ml',         '450 ml',    3900, 449, 'MDB·BY—450',  15,  0, 1 UNION ALL
+  SELECT 'bal-dafrique-ritual',             'bal-dafrique-ritual-set',              'Set of 3',  3300, 379, 'MDB·BY—SET',  50,  0, 1
 ) AS v
 JOIN `products` p ON p.identifier = v.pslug
 ON DUPLICATE KEY UPDATE

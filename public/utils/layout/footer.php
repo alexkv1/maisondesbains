@@ -51,6 +51,7 @@ $SEARCH_PRODUCTS = $SEARCH_PRODUCTS ?? [];
   </div>
   <div class="drawer__body" id="drawerBody"></div>
   <div class="drawer__foot">
+    <div class="cart-progress" id="drawerProgress"></div>
     <div class="drawer__wrap">
       <span>Gift wrap in unmarked paper</span>
       <button class="switch" id="giftSwitch" role="switch" aria-checked="false"><span class="switch__dot"></span></button>
