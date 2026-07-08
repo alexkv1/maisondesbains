@@ -107,6 +107,6 @@ $SEARCH_PRODUCTS = $SEARCH_PRODUCTS ?? [];
   window.MDB_HAS_CURRENCY = <?= isset($_COOKIE['CUR']) ? 'true' : 'false' ?>;
 </script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-<script src="/assets/app.js"></script>
+<script src="/assets/app.js?v=<?= @filemtime(__DIR__ . '/../../assets/app.js') ?>"></script>
 </body>
 </html>

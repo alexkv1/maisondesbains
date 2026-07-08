@@ -442,14 +442,21 @@ if ($('#giftScrim')) $('#giftScrim').addEventListener('click', () => { setCookie
 /* Claim from the in-cart nudge link */
 document.addEventListener('click', e => { if (e.target.closest('#nudgeClaim')) { e.preventDefault(); claimGift(); } });
 
-/* ---- Claim an account gift (welcome / support) into the bag ---- */
+/* ---- Claim / un-claim an account gift ---- */
 document.addEventListener('click', async e => {
-  const btn = e.target.closest('[data-claim-gift]');
-  if (!btn) return;
-  btn.disabled = true; btn.textContent = 'Claiming…';
-  const { data } = await post('/api/account/claim-gift', { gift_id: btn.dataset.claimGift });
-  if (data.success) window.location.reload();
-  else { btn.disabled = false; btn.textContent = 'Claim'; }
+  const claim = e.target.closest('[data-claim-gift]');
+  if (claim) {
+    claim.disabled = true; claim.textContent = 'Claiming…';
+    const { data } = await post('/api/account/claim-gift', { gift_id: claim.dataset.claimGift });
+    if (data.success) window.location.reload();
+    else { claim.disabled = false; claim.textContent = 'Claim'; }
+    return;
+  }
+  const unclaim = e.target.closest('[data-unclaim-gift]');
+  if (unclaim) {
+    const { data } = await post('/api/account/claim-gift', { gift_id: unclaim.dataset.unclaimGift, action: 'unclaim' });
+    if (data.success) window.location.reload();
+  }
 });
 
 /* ============================================================

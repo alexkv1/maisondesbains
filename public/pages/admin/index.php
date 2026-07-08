@@ -6,6 +6,7 @@
 $root = dirname(__DIR__, 2);
 require_once $root . '/db.php';
 require_once $root . '/functions.php';
+require_once $root . '/utils/cart.php';           // grantWelcomeGifts
 require_once $root . '/utils/Auth/Verify.php';   // provides $db, $AUTH
 
 // Guests → sign in; non-admins → refused.
@@ -17,7 +18,9 @@ if (!$AUTH->valid) {
 $msg = '';
 $err = '';
 
-if ($AUTH->is_admin && $_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'grant') {
+$action = ($AUTH->is_admin && $_SERVER['REQUEST_METHOD'] === 'POST') ? ($_POST['action'] ?? '') : '';
+
+if ($action === 'grant') {
     $email   = trim(strtolower($_POST['email'] ?? ''));
     $variant = trim($_POST['variant'] ?? '');
     $label   = trim($_POST['label'] ?? '') ?: 'A gift, with our compliments';
@@ -33,6 +36,28 @@ if ($AUTH->is_admin && $_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'
             [(int)$u[0]['id'], (int)$v[0]['id'], $label, time()], 'iisi'
         );
         $msg = $ok ? ('Gift granted to ' . $email . '. It will appear in their account to claim.') : 'Could not grant the gift.';
+    }
+} elseif ($action === 'points') {
+    $email = trim(strtolower($_POST['email'] ?? ''));
+    $delta = (int)($_POST['points'] ?? 0);
+    $u = $db->select("SELECT id, points FROM `users` WHERE `email` = ? AND `status` = 1 LIMIT 1", [$email], 's');
+    if (!$u) {
+        $err = 'No account found for ' . $email . '.';
+    } elseif ($delta === 0) {
+        $err = 'Enter a non-zero number of points.';
+    } else {
+        $uid = (int)$u[0]['id'];
+        $old = (int)$u[0]['points'];
+        $new = max(0, $old + $delta);
+        $db->execute("UPDATE `users` SET `points` = ? WHERE `id` = ?", [$new, $uid], 'ii');
+        // A manual award that promotes the member grants the welcome gift too.
+        $oldTierKey = tierForPoints($old)['key'];
+        $newTier    = tierForPoints($new);
+        if (tierRank($newTier['key']) > tierRank($oldTierKey) && tierRank($newTier['key']) >= 1) {
+            grantWelcomeGifts($db, $uid, $newTier['key']);
+        }
+        $verb = $delta > 0 ? 'Awarded ' . $delta : 'Deducted ' . abs($delta);
+        $msg = $verb . ' points — ' . $email . ' now has ' . number_format($new) . ' (' . $newTier['name'] . ').';
     }
 }
 
@@ -57,8 +82,8 @@ if ($AUTH->is_admin) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="robots" content="noindex, nofollow" />
 <title>Support Admin — Maison Des Bains</title>
-<link rel="stylesheet" href="/assets/ds/ds.css" />
-<link rel="stylesheet" href="/assets/styles.css" />
+<link rel="stylesheet" href="/assets/ds/ds.css?v=<?= @filemtime($root . '/assets/ds/ds.css') ?>" />
+<link rel="stylesheet" href="/assets/styles.css?v=<?= @filemtime($root . '/assets/styles.css') ?>" />
 </head>
 <body>
 <main class="admin">
@@ -103,6 +128,20 @@ if ($AUTH->is_admin) {
           <input id="label" name="label" placeholder="A gift, with our compliments" />
         </div>
         <button class="btn btn--primary btn--full" type="submit">Grant gift</button>
+      </form>
+
+      <div class="admin__bar"><h1 class="section-title">Award points</h1></div>
+      <form class="admin__card" method="post" action="/admin">
+        <input type="hidden" name="action" value="points" />
+        <div class="field">
+          <label for="p-email">Customer email</label>
+          <input id="p-email" name="email" type="email" required placeholder="name@example.com" />
+        </div>
+        <div class="field">
+          <label for="p-points">Points <span>(use a negative number to deduct)</span></label>
+          <input id="p-points" name="points" type="number" step="1" required placeholder="e.g. 250" />
+        </div>
+        <button class="btn btn--primary btn--full" type="submit">Award points</button>
       </form>
 
       <section class="admin__recent">

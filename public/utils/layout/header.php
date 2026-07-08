@@ -14,8 +14,8 @@ $signedIn   = isset($AUTH) && $AUTH->valid;
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title><?= htmlspecialchars($PAGE_TITLE) ?></title>
 <meta name="description" content="<?= htmlspecialchars($PAGE_DESC) ?>" />
-<link rel="stylesheet" href="/assets/ds/ds.css" />
-<link rel="stylesheet" href="/assets/styles.css" />
+<link rel="stylesheet" href="/assets/ds/ds.css?v=<?= @filemtime(__DIR__ . '/../../assets/ds/ds.css') ?>" />
+<link rel="stylesheet" href="/assets/styles.css?v=<?= @filemtime(__DIR__ . '/../../assets/styles.css') ?>" />
 </head>
 <body>
 

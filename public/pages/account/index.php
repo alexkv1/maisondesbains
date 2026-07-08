@@ -122,7 +122,8 @@ require $root . '/utils/layout/header.php';
             <span class="giftcard__label"><?= e($g['label']) ?></span>
             <span class="giftcard__name"><?= e($g['name']) ?> <span class="mono">(<?= e($g['size']) ?>)</span></span>
             <?php if ($claimed): ?>
-              <span class="giftcard__status">Added to your bag</span>
+              <span class="giftcard__status">Reserved for your next order</span>
+              <button class="giftcard__remove" data-unclaim-gift="<?= (int)$g['id'] ?>">Remove</button>
             <?php else: ?>
               <button class="btn btn--secondary" data-claim-gift="<?= (int)$g['id'] ?>">Claim</button>
             <?php endif; ?>
