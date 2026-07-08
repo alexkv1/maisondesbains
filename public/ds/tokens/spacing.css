@@ -1,0 +1,38 @@
+/* ============================================================
+   Maison Des Bains — Spacing & Layout
+   ------------------------------------------------------------
+   A 4px base grid, but the house breathes: default rhythms lean
+   generous. Wide gutters and tall section padding are the norm.
+   ============================================================ */
+
+:root {
+  /* --- Base scale (4px grid) --- */
+  --space-0:   0;
+  --space-1:   0.25rem;  /* 4  */
+  --space-2:   0.5rem;   /* 8  */
+  --space-3:   0.75rem;  /* 12 */
+  --space-4:   1rem;     /* 16 */
+  --space-5:   1.5rem;   /* 24 */
+  --space-6:   2rem;     /* 32 */
+  --space-7:   2.5rem;   /* 40 */
+  --space-8:   3rem;     /* 48 */
+  --space-9:   4rem;     /* 64 */
+  --space-10:  5rem;     /* 80 */
+  --space-12:  7.5rem;   /* 120 — section breaks */
+  --space-14:  10rem;    /* 160 — hero whitespace */
+
+  /* --- Semantic spacing --- */
+  --gap-inline:    var(--space-3);
+  --gap-stack:     var(--space-4);
+  --pad-control:   var(--space-4);
+  --pad-card:      var(--space-6);
+  --section-y:     var(--space-12);
+  --page-gutter:   var(--space-8);
+
+  /* --- Layout --- */
+  --max-content:   1360px;  /* full-width container   */
+  --max-prose:     640px;   /* readable measure       */
+  --max-narrow:    980px;
+  --grid-columns:  12;  /* @kind other */
+  --grid-gutter:   var(--space-6);
+}

@@ -1,0 +1,14 @@
+/* ============================================================
+   Maison Des Bains — Webfonts
+   ------------------------------------------------------------
+   SUBSTITUTION NOTE: The house identity is built on a neutral
+   neo-grotesque (Byredo/Margiela character). No brand font files
+   were provided, so the nearest freely-hostable matches are used
+   from Google Fonts. Swap these for the licensed house faces when
+   available — see readme.md > VISUAL FOUNDATIONS.
+     · Grotesque workhorse  → Archivo         (≈ Neue Haas / Helvetica Now)
+     · Editorial serif      → Cormorant Garamond (high-contrast display)
+     · Atelier mono / labels→ IBM Plex Mono   (numeric / SKU tags)
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap');

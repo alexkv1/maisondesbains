@@ -1,0 +1,56 @@
+/* ============================================================
+   Maison Des Bains — Color
+   ------------------------------------------------------------
+   A strictly monochrome house palette: ink, paper, and a warm
+   ivory, bridged by a warm-neutral grayscale. No chromatic
+   accents — hierarchy is built from value, space and type alone.
+   ============================================================ */
+
+:root {
+  /* --- Base ink & paper --- */
+  --ink:          #111110;   /* near-black — never pure #000 in type blocks */
+  --ink-pure:     #000000;   /* reserved for hairline rules & pure marks    */
+  --paper:        #FFFFFF;   /* true white surfaces                         */
+  --ivory:        #F6F3EE;   /* warm off-white — the default page ground    */
+  --ivory-deep:   #EDE8E0;   /* recessed ivory panels                       */
+
+  /* --- Warm neutral grayscale --- */
+  --gray-950: #1A1917;
+  --gray-900: #2A2825;
+  --gray-800: #3C3A36;
+  --gray-700: #56534E;
+  --gray-600: #726E67;
+  --gray-500: #8E8981;
+  --gray-400: #ABA69D;
+  --gray-300: #C8C3BA;
+  --gray-200: #E0DCD4;
+  --gray-100: #ECE9E2;
+  --gray-050: #F3F1EB;
+
+  /* --- Semantic: text --- */
+  --text-primary:   var(--ink);
+  --text-secondary: var(--gray-700);
+  --text-muted:     var(--gray-500);
+  --text-faint:     var(--gray-400);
+  --text-inverse:   var(--ivory);
+  --text-on-ink:    var(--ivory);
+
+  /* --- Semantic: surface --- */
+  --surface-page:     var(--ivory);
+  --surface-card:     var(--paper);
+  --surface-inset:    var(--ivory-deep);
+  --surface-ink:      var(--ink);
+  --surface-overlay:  rgba(17, 17, 16, 0.55);   /* scrims / modals */
+
+  /* --- Semantic: border --- */
+  --border-hairline: var(--gray-200);   /* default 1px divider */
+  --border-soft:     var(--gray-300);
+  --border-strong:   var(--ink);        /* framing / focus     */
+
+  /* --- Interaction (monochrome) --- */
+  --focus-ring:      var(--ink);
+  --selection-bg:    var(--ink);
+  --selection-fg:    var(--ivory);
+}
+
+::selection { background: var(--selection-bg); color: var(--selection-fg); }

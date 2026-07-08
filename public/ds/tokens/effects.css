@@ -1,0 +1,46 @@
+/* ============================================================
+   Maison Des Bains — Effects: borders, radii, shadow, motion
+   ------------------------------------------------------------
+   Austere by design. Corners are square; elevation is expressed
+   through hairline rules and negative space, not drop shadows.
+   Motion is slow, weighted and unhurried — never bouncy.
+   ============================================================ */
+
+:root {
+  /* --- Radii (predominantly square) --- */
+  --radius-none: 0;
+  --radius-xs:   1px;
+  --radius-sm:   2px;    /* the largest radius used on controls */
+  --radius-pill: 999px;  /* reserved for tags / quantity chips  */
+  --radius-full: 50%;
+
+  /* --- Border widths --- */
+  --border-hair:  1px;
+  --border-med:   1.5px;
+  --border-frame: 2px;
+
+  /* --- Elevation: restrained. Prefer hairlines to shadow. --- */
+  --shadow-none:  none;
+  --shadow-hair:  0 0 0 1px var(--border-hairline);
+  --shadow-soft:  0 12px 32px -20px rgba(17, 17, 16, 0.28);
+  --shadow-lift:  0 24px 60px -28px rgba(17, 17, 16, 0.34);
+  --shadow-modal: 0 40px 120px -40px rgba(17, 17, 16, 0.45);
+
+  /* --- Motion --- */
+  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);  /* @kind other */ /* refined ease-out */
+  --ease-inout:    cubic-bezier(0.65, 0, 0.35, 1);  /* @kind other */
+  --dur-fast:   140ms;  /* @kind other */
+  --dur-base:   240ms;  /* @kind other */
+  --dur-slow:   420ms;  /* @kind other */
+  --dur-drape:  680ms;   /* @kind other */ /* image reveals, drapery fades */
+
+  /* --- Interaction feedback --- */
+  --hover-dim:    0.62;   /* @kind other */ /* opacity on hover for links/marks */
+  --press-scale:  0.985;  /* @kind other */
+  --focus-outline: var(--border-frame) solid var(--focus-ring);
+  --focus-offset:  3px;
+
+  /* --- Overlay effects --- */
+  --blur-veil:  saturate(120%) blur(14px);  /* @kind other */
+  --scrim:      linear-gradient(180deg, rgba(17,17,16,0) 0%, rgba(17,17,16,0.55) 100%);  /* @kind other */
+}

@@ -1,0 +1,33 @@
+name: Main
+on:
+  push:
+    branches:
+      - main
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p $HOME/.ssh
+          echo "${{ secrets.SSH_KEY }}" > $HOME/.ssh/id_ed25519
+          chmod 600 $HOME/.ssh/id_ed25519
+
+          eval $(ssh-agent -s)
+          ssh-add $HOME/.ssh/id_ed25519
+
+      - name: Push site
+        run: rsync -e 'ssh -o StrictHostKeyChecking=no' --archive --delete public/ runner@${{ secrets.MAIN_IP }}:/home/runner/maison
+
+      - name: Copy files to web root # Double check file access permissions
+        run: ssh -o StrictHostKeyChecking=no runner@${{ secrets.MAIN_IP }} 'sudo rsync --archive --delete /home/runner/maison/ /var/www/html'
+
+      - name: Fix permissions after deploy
+        run: |
+          ssh -o StrictHostKeyChecking=no runner@${{ secrets.MAIN_IP }} << 'EOF'
+            sudo chown -R www-data:www-data /var/www/html
+            sudo find /var/www/html -type d -exec chmod 755 {} \;
+            sudo find /var/www/html -type f -exec chmod 644 {} \;
+          EOF

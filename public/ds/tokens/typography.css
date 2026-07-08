@@ -1,0 +1,63 @@
+/* ============================================================
+   Maison Des Bains — Typography
+   ------------------------------------------------------------
+   Editorial minimalism. A neutral grotesque carries structure
+   and voice; a high-contrast serif is reserved for display and
+   product poetry; a mono handles atelier labels, SKUs, numerals.
+   Uppercase labels ride on wide tracking — the house signature.
+   ============================================================ */
+
+:root {
+  /* --- Families --- */
+  --font-grotesk: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --font-serif:   'Cormorant Garamond', 'Times New Roman', serif;
+  --font-mono:    'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  /* semantic aliases */
+  --font-display: var(--font-serif);
+  --font-body:    var(--font-grotesk);
+  --font-label:   var(--font-grotesk);
+  --font-tag:     var(--font-mono);
+
+  /* --- Weights --- */
+  --weight-light:   300;
+  --weight-regular: 400;
+  --weight-medium:  500;
+  --weight-semibold:600;
+
+  /* --- Type scale (editorial, 1.25 modular) --- */
+  --size-display: 4.75rem;  /* 76px — serif hero          */
+  --size-h1:      3rem;     /* 48px                        */
+  --size-h2:      2.125rem; /* 34px                        */
+  --size-h3:      1.5rem;   /* 24px                        */
+  --size-h4:      1.25rem;  /* 20px                        */
+  --size-body-lg: 1.125rem; /* 18px                        */
+  --size-body:    1rem;     /* 16px                        */
+  --size-small:   0.875rem; /* 14px                        */
+  --size-caption: 0.75rem;  /* 12px                        */
+  --size-micro:   0.6875rem;/* 11px — tracked labels       */
+
+  /* --- Line heights --- */
+  --leading-tight:   1.04;
+  --leading-snug:    1.18;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.7;
+
+  /* --- Letter-spacing --- */
+  --tracking-tight:  -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide:   0.08em;
+  --tracking-wider:  0.18em;   /* the house label tracking */
+  --tracking-widest: 0.28em;
+
+  /* --- Composite label token (uppercase micro-caps) --- */
+  --label-transform: uppercase;  /* @kind other */
+}
+
+/* Base document rhythm — applied by consumers via styles.css */
+:root {
+  --body-font:     var(--font-body);
+  --body-size:     var(--size-body);
+  --body-leading:  var(--leading-normal);
+  --body-color:    var(--text-primary);
+}
