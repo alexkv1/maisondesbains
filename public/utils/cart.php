@@ -167,68 +167,47 @@ function cartSummary(DB $db, int $cartId, bool $giftWrap = false, ?string $tierK
     }
     unset($it);
 
-    // Complimentary per-order gift:
-    //  · Platinum/Diamond members get a tier gift on every order (revealed).
-    //  · Everyone else can claim a gift once the spend threshold is met.
-    $giftThreshold = $cfg['gift_threshold'];
-    $autoGift      = $benefits['auto_gift'];
-    if ($autoGift) {
-        $tg = perOrderGift($tierKey);
-        $giftVariant = $tg['variant'] ?? MDB_GIFT_VARIANT;
-        $giftLabel   = $tg['label'] ?? 'Gift';
-        $giftInclude = $count > 0;
-        $giftQualified = $count > 0;   // members always qualify
-    } else {
-        $giftVariant = MDB_GIFT_VARIANT;
-        $giftLabel   = 'Gift';
-        $giftQualified = ($count > 0 && $subtotal >= $giftThreshold);
-        $giftInclude = $giftQualified && (($_COOKIE['GIFT_CLAIMED'] ?? '') === '1');
-    }
-    if ($giftInclude) {
+    // Helper: append a free gift line for a variant identifier.
+    $addGift = function (string $vident, string $label) use (&$items, $db) {
         $g = $db->select(
             "SELECT v.id AS variant_id, v.identifier, v.size, v.sku, p.brand, p.name, p.image, p.identifier AS product_identifier
                FROM `product_variants` v JOIN `products` p ON p.id = v.product
               WHERE v.identifier = ? LIMIT 1",
-            [$giftVariant], 's'
+            [$vident], 's'
         );
         if ($g) {
             $gi = $g[0];
             $items[] = [
-                'identifier'         => $gi['identifier'],
-                'product_identifier' => $gi['product_identifier'],
-                'variant_id'         => (int)$gi['variant_id'],
-                'brand'              => $gi['brand'],
-                'name'               => $gi['name'],
-                'size'               => $gi['size'],
-                'sku'                => $gi['sku'],
-                'image'              => $gi['image'],
+                'identifier' => $gi['identifier'], 'product_identifier' => $gi['product_identifier'],
+                'variant_id' => (int)$gi['variant_id'], 'brand' => $gi['brand'], 'name' => $gi['name'],
+                'size' => $gi['size'], 'sku' => $gi['sku'], 'image' => $gi['image'],
                 'quantity' => 1, 'unit_price' => 0, 'line_total' => 0, 'sold_out' => 0,
-                'initial'  => mb_substr($gi['name'], 0, 1),
-                'is_gift'  => true, 'is_masked' => false, 'gift_label' => $giftLabel,
+                'initial' => mb_substr($gi['name'], 0, 1),
+                'is_gift' => true, 'is_masked' => false, 'gift_label' => $label,
             ];
+        }
+    };
+
+    // 1) Spend-campaign gift — available to everyone once the threshold is
+    //    met and claimed (via popup). Independent of tier perks.
+    $giftThreshold = $cfg['gift_threshold'];
+    $giftQualified = ($count > 0 && $subtotal >= $giftThreshold);
+    $giftInclude   = $giftQualified && (($_COOKIE['GIFT_CLAIMED'] ?? '') === '1');
+    if ($giftInclude) {
+        $addGift(MDB_GIFT_VARIANT, 'Gift');
+    }
+
+    // 2) Tier per-order gift — Platinum/Diamond, on every order (revealed).
+    if ($benefits['auto_gift'] && $count > 0) {
+        $tg = perOrderGift($tierKey);
+        if ($tg) {
+            $addGift($tg['variant'], $tg['label']);
         }
     }
 
-    // Claimed account gifts (welcome gifts, support gifts) — revealed, free.
-    // Shown even with no paid items so a just-claimed gift is visible.
+    // 3) Claimed account gifts (welcome / support) — shown even with no paid items.
     foreach ($extraGifts as $eg) {
-        $w = $db->select(
-            "SELECT v.id AS variant_id, v.identifier, v.size, v.sku, p.brand, p.name, p.image, p.identifier AS product_identifier
-               FROM `product_variants` v JOIN `products` p ON p.id = v.product
-              WHERE v.identifier = ? LIMIT 1",
-            [$eg['identifier']], 's'
-        );
-        if ($w) {
-            $wi = $w[0];
-            $items[] = [
-                'identifier' => $wi['identifier'], 'product_identifier' => $wi['product_identifier'],
-                'variant_id' => (int)$wi['variant_id'], 'brand' => $wi['brand'], 'name' => $wi['name'],
-                'size' => $wi['size'], 'sku' => $wi['sku'], 'image' => $wi['image'],
-                'quantity' => 1, 'unit_price' => 0, 'line_total' => 0, 'sold_out' => 0,
-                'initial' => mb_substr($wi['name'], 0, 1),
-                'is_gift' => true, 'is_masked' => false, 'gift_label' => $eg['label'] ?: 'Gift',
-            ];
-        }
+        $addGift($eg['identifier'], $eg['label'] ?: 'Gift');
     }
 
     $giftWrapAmt   = ($giftWrap && $count > 0) ? ($benefits['free_wrap'] ? 0 : $cfg['gift_wrap']) : 0;
@@ -255,7 +234,7 @@ function cartSummary(DB $db, int $cartId, bool $giftWrap = false, ?string $tierK
         'gift_threshold'   => $giftThreshold,
         'gift_qualified'   => $giftQualified,
         'gift_claimed'     => $giftInclude,
-        'gift_remaining'   => $autoGift ? 0 : max(0, $giftThreshold - $subtotal),
+        'gift_remaining'   => max(0, $giftThreshold - $subtotal),
         'free_wrap'        => $benefits['free_wrap'],
         'free_shipping'    => $benefits['free_shipping'],
     ];
