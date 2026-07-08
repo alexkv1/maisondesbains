@@ -77,18 +77,23 @@ function paintCount(count) {
   cartCountEl.hidden = count === 0;
 }
 
+function cartUnits(cart) { return (cart.items || []).reduce((a, i) => a + i.quantity, 0); }
+function onlyGifts(cart) { return (cart.items || []).length > 0 && cart.count === 0; }
+
 function renderDrawer(cart) {
   lastCart = cart;
-  paintCount(cart.count);
-  if (drawerCount) drawerCount.textContent = `(${cart.count})`;
+  const units = cartUnits(cart);
+  paintCount(units);
+  if (drawerCount) drawerCount.textContent = `(${units})`;
   // Cart shows items only (+ gift wrap). Delivery is calculated at checkout.
   if (drawerTotal) drawerTotal.textContent = gbp(cart.subtotal_cents + cart.gift_wrap_cents);
   if (!drawerBody) return;
-  if (cart.count === 0) {
+  if (!cart.items || cart.items.length === 0) {
     drawerBody.innerHTML = `<p class="drawer__empty">The basket is empty.</p>`;
     return;
   }
-  drawerBody.innerHTML = giftNudge(cart) + cart.items.map(it => lineHTML(it, false)).join('');
+  const note = onlyGifts(cart) ? `<p class="gift-nudge">Add an item to place your order — gifts can't be ordered on their own.</p>` : '';
+  drawerBody.innerHTML = giftNudge(cart) + note + cart.items.map(it => lineHTML(it, false)).join('');
   maybeShowGift(cart);
 }
 
@@ -207,10 +212,11 @@ const cartLines = $('#cartLines');
 function renderCartPage(cart) {
   if (!cartLines) return;
   const wrap = $('#cartPage');
-  if (cart.count === 0) {
+  if (!cart.items || cart.items.length === 0) {
     cartLines.innerHTML = `<p class="drawer__empty">${wrap.dataset.empty}</p>`;
   } else {
-    cartLines.innerHTML = giftNudge(cart) + cart.items.map(it => lineHTML(it, true)).join('');
+    const note = onlyGifts(cart) ? `<p class="gift-nudge">Add an item to place your order — gifts can't be ordered on their own.</p>` : '';
+    cartLines.innerHTML = giftNudge(cart) + note + cart.items.map(it => lineHTML(it, true)).join('');
   }
   const set = (id, v) => { const el = $(id); if (el) el.textContent = v; };
   // Items only (+ gift wrap). Delivery is calculated at checkout.

@@ -33,7 +33,10 @@ $claimed = claimedGifts($db, $userId);
 $summary = cartSummary($db, $cartId, $giftWrap, $tierKey, $claimed);
 
 if ($summary['count'] === 0) {
-    respond(['success' => false, 'message' => 'Your bag is empty.'], 400);
+    $onlyGifts = !empty($summary['items']);
+    respond(['success' => false, 'message' => $onlyGifts
+        ? 'Add an item to place your order — gifts cannot be ordered on their own.'
+        : 'Your bag is empty.'], 400);
 }
 
 // Re-check stock right before taking payment.

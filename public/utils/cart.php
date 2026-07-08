@@ -202,8 +202,8 @@ function cartSummary(DB $db, int $cartId, bool $giftWrap = false, ?string $tierK
     }
 
     // Claimed account gifts (welcome gifts, support gifts) — revealed, free.
+    // Shown even with no paid items so a just-claimed gift is visible.
     foreach ($extraGifts as $eg) {
-        if ($count === 0) break;
         $w = $db->select(
             "SELECT v.id AS variant_id, v.identifier, v.size, v.sku, p.brand, p.name, p.image, p.identifier AS product_identifier
                FROM `product_variants` v JOIN `products` p ON p.id = v.product
