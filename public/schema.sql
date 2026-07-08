@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS `products` (
   `category`    VARCHAR(32)  NOT NULL DEFAULT 'Soap',
   `notes`       VARCHAR(255) NOT NULL DEFAULT '',
   `blurb`       TEXT,
+  `image`       VARCHAR(190) DEFAULT NULL,       -- path under /assets/img, or NULL for a blank plate
   `badge`       VARCHAR(24)  DEFAULT NULL,
   `status`      TINYINT(1)   NOT NULL DEFAULT 1,
   `date_created` INT UNSIGNED NOT NULL DEFAULT 0,
@@ -135,17 +136,17 @@ CREATE TABLE IF NOT EXISTS `order_items` (
 -- ============================================================
 -- Seed catalogue
 -- ============================================================
-INSERT INTO `products` (`identifier`, `brand`, `name`, `line`, `category`, `notes`, `blurb`, `badge`, `date_created`)
+INSERT INTO `products` (`identifier`, `brand`, `name`, `line`, `category`, `notes`, `blurb`, `image`, `badge`, `date_created`)
 VALUES
-  ('santal-33-shower-gel',    'Le Labo', 'Santal 33 Shower Gel',     'Shower Gel', 'Wash', 'Sandalwood · Cardamom · Iris · Leather', 'The cult Santal 33, drawn into a lathering shower gel. Smoky sandalwood and iris, left on warm skin.', NULL, UNIX_TIMESTAMP()),
-  ('santal-33-body-lotion',   'Le Labo', 'Santal 33 Body Lotion',    'Body Lotion', 'Body', 'Sandalwood · Violet · Cardamom · Amber', 'A weightless lotion carrying Santal 33''s smoky sandalwood and violet. Sinks in, lingers for hours.', NULL, UNIX_TIMESTAMP()),
-  ('bal-dafrique-shower-gel', 'Byredo',  'Bal d''Afrique Shower Gel', 'Shower Gel', 'Wash', 'Bergamot · Neroli · Marigold · Vetiver', 'Byredo''s Bal d''Afrique as a shower gel — African marigold, neroli and warm vetiver.', NULL, UNIX_TIMESTAMP()),
-  ('bal-dafrique-body-lotion','Byredo',  'Bal d''Afrique Body Lotion', 'Body Lotion', 'Body', 'Bergamot · Violet · Vetiver · Musk', 'A supple body lotion of bergamot, violet and vetiver. The 1920s Paris–Africa reverie, worn on skin.', NULL, UNIX_TIMESTAMP()),
-  ('bal-dafrique-soap',       'Byredo',  'Bal d''Afrique Soap',       'Soap', 'Soap', 'Bergamot · Neroli · Black Amber', 'A milled soap of Bal d''Afrique — bergamot and black amber, kept by the basin.', NULL, UNIX_TIMESTAMP()),
-  ('bal-dafrique-hand-wash',  'Byredo',  'Bal d''Afrique Hand Wash',  'Hand Wash', 'Wash', 'Bergamot · Neroli · Vetiver · Amber', 'A generous hand wash of Bal d''Afrique. Neroli and vetiver, left on the hands like a signature.', NULL, UNIX_TIMESTAMP())
+  ('santal-33-shower-gel',    'Le Labo', 'Santal 33 Shower Gel',     'Shower Gel', 'Wash', 'Sandalwood · Cardamom · Iris · Leather', 'The cult Santal 33, drawn into a lathering shower gel. Smoky sandalwood and iris, left on warm skin.', NULL, NULL, UNIX_TIMESTAMP()),
+  ('santal-33-body-lotion',   'Le Labo', 'Santal 33 Body Lotion',    'Body Lotion', 'Body', 'Sandalwood · Violet · Cardamom · Amber', 'A weightless lotion carrying Santal 33''s smoky sandalwood and violet. Sinks in, lingers for hours.', NULL, NULL, UNIX_TIMESTAMP()),
+  ('bal-dafrique-shower-gel', 'Byredo',  'Bal d''Afrique Shower Gel', 'Shower Gel', 'Wash', 'Bergamot · Neroli · Marigold · Vetiver', 'Byredo''s Bal d''Afrique as a shower gel — African marigold, neroli and warm vetiver.', '/assets/img/bal-dafrique-shower-gel.png', NULL, UNIX_TIMESTAMP()),
+  ('bal-dafrique-body-lotion','Byredo',  'Bal d''Afrique Body Lotion', 'Body Lotion', 'Body', 'Bergamot · Violet · Vetiver · Musk', 'A supple body lotion of bergamot, violet and vetiver. The 1920s Paris–Africa reverie, worn on skin.', '/assets/img/bal-dafrique-body-lotion.png', NULL, UNIX_TIMESTAMP()),
+  ('bal-dafrique-soap',       'Byredo',  'Bal d''Afrique Soap',       'Soap', 'Soap', 'Bergamot · Neroli · Black Amber', 'A milled soap of Bal d''Afrique — bergamot and black amber, kept by the basin.', '/assets/img/bal-dafrique-soap.jpg', NULL, UNIX_TIMESTAMP()),
+  ('bal-dafrique-hand-wash',  'Byredo',  'Bal d''Afrique Hand Wash',  'Hand Wash', 'Wash', 'Bergamot · Neroli · Vetiver · Amber', 'A generous hand wash of Bal d''Afrique. Neroli and vetiver, left on the hands like a signature.', '/assets/img/bal-dafrique-hand-wash.png', NULL, UNIX_TIMESTAMP())
 ON DUPLICATE KEY UPDATE
   `brand`=VALUES(`brand`), `name`=VALUES(`name`), `line`=VALUES(`line`), `category`=VALUES(`category`),
-  `notes`=VALUES(`notes`), `blurb`=VALUES(`blurb`), `badge`=VALUES(`badge`);
+  `notes`=VALUES(`notes`), `blurb`=VALUES(`blurb`), `image`=VALUES(`image`), `badge`=VALUES(`badge`);
 
 -- Variants (sizes). 450 ml editions for the gels & lotions are marked
 -- sold_out = 1 ("coming soon") until priced and stocked.

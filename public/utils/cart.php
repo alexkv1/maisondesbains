@@ -72,7 +72,7 @@ function cartSummary(DB $db, int $cartId, bool $giftWrap = false): array {
     $items = $db->select(
         "SELECT ci.id AS item_id, ci.quantity,
                 v.id AS variant_id, v.identifier, v.size, v.price_cents, v.price_sek, v.sku, v.sold_out,
-                p.id AS product_id, p.identifier AS product_identifier, p.brand, p.name
+                p.id AS product_id, p.identifier AS product_identifier, p.brand, p.name, p.image
            FROM `cart_items` ci
            JOIN `product_variants` v ON v.id = ci.variant
            JOIN `products` p ON p.id = v.product

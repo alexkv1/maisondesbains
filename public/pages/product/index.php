@@ -52,7 +52,11 @@ require $root . '/utils/layout/header.php';
     <div class="product__plate">
       <?php if ($allSoldOut): ?><span class="card__flag">Coming Soon</span>
       <?php elseif (!empty($p['badge'])): ?><span class="card__flag"><?= e($p['badge']) ?></span><?php endif; ?>
-      <span class="product__initial" aria-hidden="true"><?= e(mb_substr($p['name'], 0, 1)) ?></span>
+      <?php if (!empty($p['image'])): ?>
+        <img class="product__photo" src="<?= e($p['image']) ?>" alt="<?= e($p['brand'] . ' ' . $p['name']) ?>" />
+      <?php else: ?>
+        <span class="product__initial" aria-hidden="true"><?= e(mb_substr($p['name'], 0, 1)) ?></span>
+      <?php endif; ?>
       <span class="product__ref mono" id="pdpSku"><?= $def ? e($def['sku']) : '' ?></span>
     </div>
 

@@ -24,7 +24,12 @@ function renderCard(array $p, array $variants = []): string {
     $cat     = e($p['category']);
     $initial = e(mb_substr($p['name'], 0, 1));
     $badge   = $p['badge'] ?? null;
+    $image   = $p['image'] ?? null;
     $heart   = MDB_HEART;
+
+    $visual = $image
+        ? '<img class="card__photo" src="' . e($image) . '" alt="' . $brand . ' ' . $name . '" loading="lazy" />'
+        : '<span class="card__initial" aria-hidden="true">' . $initial . '</span>';
 
     $def       = defaultVariant($variants);
     $sellable  = array_filter($variants, fn($v) => (int)$v['sold_out'] === 0 && (int)$v['status'] === 1);
@@ -55,7 +60,7 @@ function renderCard(array $p, array $variants = []): string {
       <div class="card__plate">
         {$flag}
         <button class="card__wish" data-wish="{$id}" aria-label="Add to wishlist">{$heart}</button>
-        <span class="card__initial" aria-hidden="true">{$initial}</span>
+        {$visual}
         <a class="card__link" href="/product?id={$id}" aria-label="{$brand} {$name}"></a>
         {$add}
       </div>

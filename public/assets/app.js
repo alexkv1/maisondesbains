@@ -88,7 +88,7 @@ function renderDrawer(cart) {
   }
   drawerBody.innerHTML = cart.items.map(it => `
     <div class="line">
-      <div class="line__plate"><span aria-hidden="true">${it.initial}</span></div>
+      <div class="line__plate">${it.image ? `<img src="${it.image}" alt="${it.name}" />` : `<span aria-hidden="true">${it.initial}</span>`}</div>
       <div class="line__body">
         <span class="line__brand">${it.brand}</span>
         <span class="line__name">${it.name}</span>
@@ -169,7 +169,7 @@ function renderCartPage(cart) {
   } else {
     cartLines.innerHTML = cart.items.map(it => `
       <div class="line">
-        <div class="line__plate"><span aria-hidden="true">${it.initial}</span></div>
+        <div class="line__plate">${it.image ? `<img src="${it.image}" alt="${it.name}" />` : `<span aria-hidden="true">${it.initial}</span>`}</div>
         <div class="line__body">
           <span class="line__brand">${it.brand}</span>
           <a class="line__name" href="/product?id=${it.product_identifier}">${it.name}</a>
