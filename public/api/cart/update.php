@@ -7,28 +7,28 @@ require_once __DIR__ . '/../../utils/Auth/Verify.php';
 requireMethod('POST');
 $in = readInput();
 
-$identifier = trim($in['product'] ?? '');
+$identifier = trim($in['variant'] ?? $in['product'] ?? '');
 $qty = (int)($in['quantity'] ?? 0);   // absolute quantity; 0 removes
 if ($identifier === '') {
-    respond(['success' => false, 'message' => 'Missing product.'], 400);
+    respond(['success' => false, 'message' => 'Missing item.'], 400);
 }
 
-$rows = $db->select("SELECT id FROM `products` WHERE `identifier` = ? LIMIT 1", [$identifier], 's');
+$rows = $db->select("SELECT id FROM `product_variants` WHERE `identifier` = ? LIMIT 1", [$identifier], 's');
 if (!$rows) {
-    respond(['success' => false, 'message' => 'That product does not exist.'], 404);
+    respond(['success' => false, 'message' => 'That item does not exist.'], 404);
 }
-$productId = (int)$rows[0]['id'];
+$variantId = (int)$rows[0]['id'];
 
 $userId = $AUTH->valid ? $AUTH->user : null;
 $cartId = resolveCart($db, $userId);
 
 if ($qty <= 0) {
-    $db->execute("DELETE FROM `cart_items` WHERE `cart` = ? AND `product` = ?", [$cartId, $productId], 'ii');
+    $db->execute("DELETE FROM `cart_items` WHERE `cart` = ? AND `variant` = ?", [$cartId, $variantId], 'ii');
 } else {
     $db->execute(
-        "INSERT INTO `cart_items` (`cart`, `product`, `quantity`) VALUES (?, ?, ?)
+        "INSERT INTO `cart_items` (`cart`, `variant`, `quantity`) VALUES (?, ?, ?)
          ON DUPLICATE KEY UPDATE `quantity` = VALUES(`quantity`)",
-        [$cartId, $productId, min($qty, 99)],
+        [$cartId, $variantId, min($qty, 99)],
         'iii'
     );
 }

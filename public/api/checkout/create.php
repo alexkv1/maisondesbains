@@ -63,10 +63,10 @@ $orderId = (int)$db->lastInsertId();
 
 foreach ($summary['items'] as $it) {
     $db->execute(
-        "INSERT INTO `order_items` (`order`, `product`, `brand`, `name`, `sku`, `unit_price_cents`, `quantity`)
-         VALUES (?, ?, ?, ?, ?, ?, ?)",
-        [$orderId, $it['product_id'], $it['brand'], $it['name'], $it['sku'], $it['unit_price'], $it['quantity']],
-        'iisssii'
+        "INSERT INTO `order_items` (`order`, `variant`, `brand`, `name`, `size`, `sku`, `unit_price_cents`, `quantity`)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        [$orderId, $it['variant_id'], $it['brand'], $it['name'], $it['size'], $it['sku'], $it['unit_price'], $it['quantity']],
+        'iissssii'
     );
 }
 

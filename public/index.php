@@ -5,12 +5,15 @@ require_once __DIR__ . '/utils/render.php';
 require_once __DIR__ . '/utils/Auth/Verify.php';   // provides $db and $AUTH
 
 $products = $db->select("SELECT * FROM `products` WHERE `status` = 1 ORDER BY `id` ASC") ?: [];
+$VARIANTS = variantsByProduct($db);
 
 // Catalogue for the search overlay.
-$SEARCH_PRODUCTS = array_map(function ($p) {
+$SEARCH_PRODUCTS = array_map(function ($p) use ($VARIANTS) {
+    $def = defaultVariant($VARIANTS[(int)$p['id']] ?? []);
     return [
         'id' => $p['identifier'], 'name' => $p['name'], 'brand' => $p['brand'],
-        'line' => $p['line'], 'notes' => $p['notes'], 'price' => money(productPrice($p)),
+        'line' => $p['line'], 'notes' => $p['notes'],
+        'price' => $def ? money(productPrice($def)) : '',
     ];
 }, $products);
 
@@ -48,7 +51,7 @@ require __DIR__ . '/utils/layout/header.php';
       <div class="filters" id="filters"></div>
     </div>
     <div class="product-grid" id="productGrid">
-      <?php foreach ($products as $p) { echo renderCard($p); } ?>
+      <?php foreach ($products as $p) { echo renderCard($p, $VARIANTS[(int)$p['id']] ?? []); } ?>
     </div>
   </section>
 

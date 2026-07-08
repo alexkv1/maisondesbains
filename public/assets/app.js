@@ -92,6 +92,7 @@ function renderDrawer(cart) {
       <div class="line__body">
         <span class="line__brand">${it.brand}</span>
         <span class="line__name">${it.name}</span>
+        <span class="line__size mono">${it.size}</span>
         <div class="line__foot">
           <div class="qty">
             <button data-dec="${it.identifier}" aria-label="Decrease">−</button>
@@ -171,7 +172,8 @@ function renderCartPage(cart) {
         <div class="line__plate"><span aria-hidden="true">${it.initial}</span></div>
         <div class="line__body">
           <span class="line__brand">${it.brand}</span>
-          <a class="line__name" href="/product?id=${it.identifier}">${it.name}</a>
+          <a class="line__name" href="/product?id=${it.product_identifier}">${it.name}</a>
+          <span class="line__size mono">${it.size}</span>
           <div class="line__foot">
             <div class="qty">
               <button data-dec="${it.identifier}" aria-label="Decrease">−</button>
@@ -271,6 +273,23 @@ if (logoutBtn) logoutBtn.addEventListener('click', async () => {
   await post('/api/account/logout', {});
   window.location.href = '/';
 });
+
+/* ============================================================
+   PRODUCT PAGE — size selector
+   ============================================================ */
+const sizesEl = $('#sizes');
+if (sizesEl) {
+  $$('.size', sizesEl).forEach(btn => btn.addEventListener('click', () => {
+    if (btn.dataset.sold === '1') return;
+    $$('.size', sizesEl).forEach(b => b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+    const price = btn.dataset.price, sku = btn.dataset.sku, variant = btn.dataset.variant;
+    if ($('#pdpPrice')) $('#pdpPrice').textContent = price;
+    if ($('#pdpSku')) $('#pdpSku').textContent = sku;
+    const add = $('#pdpAdd');
+    if (add) { add.dataset.add = variant; if ($('#pdpAddPrice')) $('#pdpAddPrice').textContent = price; }
+  }));
+}
 
 /* ============================================================
    SEARCH OVERLAY

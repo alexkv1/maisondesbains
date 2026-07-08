@@ -30,7 +30,7 @@ if (!$order): ?>
 <?php
 else:
     $items = $db->select(
-        "SELECT `brand`, `name`, `sku`, `unit_price_cents`, `quantity` FROM `order_items` WHERE `order` = ? ORDER BY id ASC",
+        "SELECT `brand`, `name`, `size`, `sku`, `unit_price_cents`, `quantity` FROM `order_items` WHERE `order` = ? ORDER BY id ASC",
         [(int)$order['id']], 'i'
     ) ?: [];
     $paid = $order['status'] === 'paid';
@@ -58,6 +58,7 @@ else:
           <div class="line__body">
             <span class="line__brand"><?= e($it['brand']) ?></span>
             <span class="line__name"><?= e($it['name']) ?></span>
+            <span class="line__size mono"><?= e($it['size']) ?></span>
             <span class="mono confirm__qty"><?= (int)$it['quantity'] ?> × <?= money((int)$it['unit_price_cents'], $order['currency']) ?></span>
           </div>
           <span class="line__price mono"><?= money((int)$it['unit_price_cents'] * (int)$it['quantity'], $order['currency']) ?></span>

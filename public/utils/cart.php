@@ -70,10 +70,12 @@ function cartSummary(DB $db, int $cartId, bool $giftWrap = false): array {
     $cfg = currencies()[$currency];
 
     $items = $db->select(
-        "SELECT ci.id AS item_id, ci.quantity, p.id AS product_id, p.identifier,
-                p.brand, p.name, p.line, p.price_cents, p.price_sek, p.sku, p.sold_out
+        "SELECT ci.id AS item_id, ci.quantity,
+                v.id AS variant_id, v.identifier, v.size, v.price_cents, v.price_sek, v.sku, v.sold_out,
+                p.id AS product_id, p.identifier AS product_identifier, p.brand, p.name
            FROM `cart_items` ci
-           JOIN `products` p ON p.id = ci.product
+           JOIN `product_variants` v ON v.id = ci.variant
+           JOIN `products` p ON p.id = v.product
           WHERE ci.cart = ?
           ORDER BY ci.id ASC",
         [$cartId],
@@ -87,7 +89,7 @@ function cartSummary(DB $db, int $cartId, bool $giftWrap = false): array {
     $count = 0;
     foreach ($items as &$it) {
         $it['quantity']    = (int)$it['quantity'];
-        $it['unit_price']  = productPrice($it, $currency);
+        $it['unit_price']  = productPrice($it, $currency);   // $it carries price_cents / price_sek
         $it['line_total']  = $it['unit_price'] * $it['quantity'];
         $it['initial']     = mb_substr($it['name'], 0, 1);
         $subtotal += $it['line_total'];

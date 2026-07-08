@@ -68,12 +68,12 @@ function mergeGuestCart(DB $db, int $userId, ?string $guestToken): void {
         return;
     }
 
-    $items = $db->select("SELECT product, quantity FROM `cart_items` WHERE `cart` = ?", [$guestCart], 'i');
+    $items = $db->select("SELECT variant, quantity FROM `cart_items` WHERE `cart` = ?", [$guestCart], 'i');
     foreach ($items ?: [] as $it) {
         $db->execute(
-            "INSERT INTO `cart_items` (`cart`, `product`, `quantity`) VALUES (?, ?, ?)
+            "INSERT INTO `cart_items` (`cart`, `variant`, `quantity`) VALUES (?, ?, ?)
              ON DUPLICATE KEY UPDATE `quantity` = `quantity` + VALUES(`quantity`)",
-            [$userCart, (int)$it['product'], (int)$it['quantity']],
+            [$userCart, (int)$it['variant'], (int)$it['quantity']],
             'iii'
         );
     }
