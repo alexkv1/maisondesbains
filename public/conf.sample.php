@@ -17,4 +17,6 @@ return [
     'stripe-webhook-secret' => '',   // whsec_...
 
     'sek-rate'              => 11.3, // EUR -> SEK display rate
+
+    'admin-key'             => '',   // passcode for /admin (blank = admin disabled)
 ];

@@ -36,6 +36,8 @@ jobs:
               'dbname'     => '${{ secrets.DB_NAME }}',
               'stripe-key' => '${{ secrets.STRIPE_KEY }}',
               'stripe-webhook-secret' => '${{ secrets.STRIPE_WEBHOOK_SECRET }}',
+              'sek-rate' => 11.3,
+              'admin-key' => '${{ secrets.ADMIN_KEY }}',
           ];
           EOL
           EOF
