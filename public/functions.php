@@ -66,6 +66,9 @@ function currencies(): array {
 /** The complimentary gift: which variant, unlocked above gift_threshold. */
 const MDB_GIFT_VARIANT = 'bal-dafrique-soap-30g';
 
+/** Maximum quantity of any single item allowed in the cart. */
+const MDB_MAX_PER_ITEM = 10;
+
 /** The visitor's selected currency (CUR cookie), defaulting to EUR. */
 function currentCurrency(): string {
     $c = strtoupper($_COOKIE['CUR'] ?? 'EUR');

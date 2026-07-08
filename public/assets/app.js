@@ -18,6 +18,7 @@ async function api(path, opts = {}) {
   return { ok: res.ok, status: res.status, data };
 }
 const post = (path, body) => api(path, { method: 'POST', body: JSON.stringify(body || {}) });
+const MAX_PER_ITEM = 10;
 
 /* Format an integer amount (already in the active currency's unit). */
 function fmtAmount(amount) {
@@ -123,7 +124,7 @@ function lineHTML(it, asLink) {
           <div class="qty">
             <button data-dec="${it.identifier}" aria-label="Decrease">−</button>
             <span>${it.quantity}</span>
-            <button data-inc="${it.identifier}" aria-label="Increase">+</button>
+            <button data-inc="${it.identifier}" aria-label="Increase" ${it.quantity >= MAX_PER_ITEM ? 'disabled' : ''}>+</button>
           </div>
           <span class="line__price mono">${gbp(it.line_total)}</span>
         </div>

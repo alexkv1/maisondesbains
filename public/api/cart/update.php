@@ -28,7 +28,7 @@ if ($qty <= 0) {
     $db->execute(
         "INSERT INTO `cart_items` (`cart`, `variant`, `quantity`) VALUES (?, ?, ?)
          ON DUPLICATE KEY UPDATE `quantity` = VALUES(`quantity`)",
-        [$cartId, $variantId, min($qty, 99)],
+        [$cartId, $variantId, min($qty, MDB_MAX_PER_ITEM)],
         'iii'
     );
 }
