@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `last_name`     VARCHAR(80)  NOT NULL DEFAULT '',
   `phone`           VARCHAR(40)  NOT NULL DEFAULT '',
   `points`          INT UNSIGNED NOT NULL DEFAULT 0,
+  `is_admin`        TINYINT(1)   NOT NULL DEFAULT 0,
   `status`          TINYINT(1)   NOT NULL DEFAULT 1,
   `date_created`  INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),

@@ -53,7 +53,10 @@ require $root . '/utils/layout/header.php';
       <h1 class="section-title">Good day, <?= e($AUTH->first_name ?: 'friend') ?>.</h1>
       <p class="account__email mono"><?= e($AUTH->email) ?></p>
     </div>
-    <button class="btn btn--secondary" id="logoutBtn">Sign out</button>
+    <div class="account__actions">
+      <?php if ($AUTH->is_admin): ?><a class="btn btn--ghost" href="/admin">Support admin</a><?php endif; ?>
+      <button class="btn btn--secondary" id="logoutBtn">Sign out</button>
+    </div>
   </div>
 
   <section class="loyalty">

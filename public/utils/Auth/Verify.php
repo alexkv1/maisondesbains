@@ -50,6 +50,7 @@ function verifyAuth(DB $db): stdClass {
     $auth->phone = $user['phone'];
     $auth->points = (int)($user['points'] ?? 0);
     $auth->tier = tierForPoints($auth->points);
+    $auth->is_admin = (int)($user['is_admin'] ?? 0) === 1;
     $auth->valid = true;
 
     return $auth;

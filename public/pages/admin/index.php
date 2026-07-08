@@ -1,59 +1,44 @@
 <?php
 /**
- * Lightweight support admin — grant gifts to customers.
- * Gated by a passcode (conf.php 'admin-key'). Not indexed.
+ * Support admin — grant gifts to customers.
+ * Restricted to signed-in accounts with is_admin = 1. Not indexed.
  */
 $root = dirname(__DIR__, 2);
 require_once $root . '/db.php';
 require_once $root . '/functions.php';
+require_once $root . '/utils/Auth/Verify.php';   // provides $db, $AUTH
 
-$cfg = config();
-$adminKey = $cfg['admin-key'] ?? '';
-$isAdmin = $adminKey !== '' && hash_equals($adminKey, $_COOKIE['ADMIN_KEY'] ?? '');
+// Guests → sign in; non-admins → refused.
+if (!$AUTH->valid) {
+    header('Location: /login?redirect=/admin');
+    exit;
+}
 
 $msg = '';
 $err = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $action = $_POST['action'] ?? '';
-
-    if ($action === 'login') {
-        if ($adminKey !== '' && hash_equals($adminKey, $_POST['key'] ?? '')) {
-            setcookie('ADMIN_KEY', $adminKey, ['expires' => time() + 86400, 'path' => '/', 'httponly' => true, 'samesite' => 'Strict']);
-            header('Location: /admin');
-            exit;
-        }
-        $err = 'Incorrect passcode.';
-    } elseif ($action === 'logout') {
-        setcookie('ADMIN_KEY', '', ['expires' => time() - 3600, 'path' => '/']);
-        header('Location: /admin');
-        exit;
-    } elseif ($action === 'grant' && $isAdmin) {
-        $email   = trim(strtolower($_POST['email'] ?? ''));
-        $variant = trim($_POST['variant'] ?? '');
-        $label   = trim($_POST['label'] ?? '') ?: 'A gift, with our compliments';
-        $db = new DB();
-        $u = $db->select("SELECT id, first_name FROM `users` WHERE `email` = ? AND `status` = 1 LIMIT 1", [$email], 's');
-        $v = $db->select("SELECT id FROM `product_variants` WHERE `identifier` = ? LIMIT 1", [$variant], 's');
-        if (!$u) {
-            $err = 'No account found for ' . $email . '.';
-        } elseif (!$v) {
-            $err = 'Unknown product.';
-        } else {
-            $ok = $db->execute(
-                "INSERT INTO `user_gifts` (`user`, `variant`, `label`, `status`, `date_created`) VALUES (?, ?, ?, 'available', ?)",
-                [(int)$u[0]['id'], (int)$v[0]['id'], $label, time()], 'iisi'
-            );
-            $msg = $ok ? ('Gift granted to ' . $email . '. It will appear in their account to claim.') : 'Could not grant the gift.';
-        }
+if ($AUTH->is_admin && $_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'grant') {
+    $email   = trim(strtolower($_POST['email'] ?? ''));
+    $variant = trim($_POST['variant'] ?? '');
+    $label   = trim($_POST['label'] ?? '') ?: 'A gift, with our compliments';
+    $u = $db->select("SELECT id FROM `users` WHERE `email` = ? AND `status` = 1 LIMIT 1", [$email], 's');
+    $v = $db->select("SELECT id FROM `product_variants` WHERE `identifier` = ? LIMIT 1", [$variant], 's');
+    if (!$u) {
+        $err = 'No account found for ' . $email . '.';
+    } elseif (!$v) {
+        $err = 'Unknown product.';
+    } else {
+        $ok = $db->execute(
+            "INSERT INTO `user_gifts` (`user`, `variant`, `label`, `status`, `date_created`) VALUES (?, ?, ?, 'available', ?)",
+            [(int)$u[0]['id'], (int)$v[0]['id'], $label, time()], 'iisi'
+        );
+        $msg = $ok ? ('Gift granted to ' . $email . '. It will appear in their account to claim.') : 'Could not grant the gift.';
     }
 }
 
-// Data for the form + recent list (only when authed).
 $variants = [];
 $recent = [];
-if ($isAdmin) {
-    $db = $db ?? new DB();
+if ($AUTH->is_admin) {
     $variants = $db->select(
         "SELECT v.identifier, v.size, p.brand, p.name FROM `product_variants` v JOIN `products` p ON p.id = v.product
           WHERE v.status = 1 ORDER BY p.brand, p.name, v.position"
@@ -83,24 +68,17 @@ if ($isAdmin) {
       <span class="eyebrow">Support Admin</span>
     </div>
 
-    <?php if (!$adminKey): ?>
-      <div class="stock-alert"><p class="stock-alert__lead">Admin is disabled</p><p>Set an <span class="mono">admin-key</span> in conf.php to enable this page.</p></div>
-
-    <?php elseif (!$isAdmin): ?>
-      <form class="admin__card" method="post" action="/admin">
-        <input type="hidden" name="action" value="login" />
-        <div class="field">
-          <label for="key">Passcode</label>
-          <input id="key" name="key" type="password" autocomplete="off" required autofocus />
-        </div>
-        <?php if ($err): ?><p class="auth__err"><?= e($err) ?></p><?php endif; ?>
-        <button class="btn btn--primary btn--full" type="submit">Enter</button>
-      </form>
+    <?php if (!$AUTH->is_admin): ?>
+      <div class="admin__card" style="text-align:center">
+        <h1 class="section-title">Not authorised</h1>
+        <p style="margin:1rem 0; color:var(--text-secondary)">This area is for Maison staff. You are signed in as <span class="mono"><?= e($AUTH->email) ?></span>.</p>
+        <a class="btn btn--secondary" href="/account">Back to your account</a>
+      </div>
 
     <?php else: ?>
       <div class="admin__bar">
         <h1 class="section-title">Grant a gift</h1>
-        <form method="post" action="/admin"><input type="hidden" name="action" value="logout" /><button class="btn btn--ghost" type="submit">Sign out</button></form>
+        <a class="btn btn--ghost" href="/account">Account</a>
       </div>
 
       <?php if ($msg): ?><p class="admin__msg"><?= e($msg) ?></p><?php endif; ?>

@@ -611,6 +611,7 @@ em { font-style: italic; }
 @media (max-width: 780px) { .loyalty__grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 460px) { .loyalty__grid { grid-template-columns: 1fr; } }
 .account__email { color: var(--text-muted); margin-top: 0.5rem; font-size: var(--size-small); }
+.account__actions { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
 .account__empty { color: var(--text-secondary); font-family: var(--font-serif); font-style: italic; font-size: var(--size-body-lg); margin-top: var(--space-4); }
 .account__empty a { text-decoration: underline; text-underline-offset: 0.25em; }
 
