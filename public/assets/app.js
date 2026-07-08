@@ -87,12 +87,37 @@ function renderDrawer(cart) {
     drawerBody.innerHTML = `<p class="drawer__empty">The basket is empty.</p>`;
     return;
   }
-  drawerBody.innerHTML = cart.items.map(it => `
+  drawerBody.innerHTML = giftNudge(cart) + cart.items.map(it => lineHTML(it, false)).join('');
+  maybeShowGift(cart);
+}
+
+/* A cart line — normal (with quantity controls) or a complimentary gift. */
+function lineHTML(it, asLink) {
+  const plate = `<div class="line__plate">${it.image ? `<img src="${it.image}" alt="${it.name}" />` : `<span aria-hidden="true">${it.initial}</span>`}</div>`;
+  const nameEl = asLink
+    ? `<a class="line__name" href="/product?id=${it.product_identifier}">${it.name}</a>`
+    : `<span class="line__name">${it.name}</span>`;
+  if (it.is_gift) {
+    return `
+    <div class="line line--gift">
+      ${plate}
+      <div class="line__body">
+        <span class="line__brand">${it.brand} · Complimentary</span>
+        ${nameEl}
+        <span class="line__size mono">${it.size}</span>
+        <div class="line__foot">
+          <span class="gifttag">Gift</span>
+          <span class="line__price mono">Free</span>
+        </div>
+      </div>
+    </div>`;
+  }
+  return `
     <div class="line">
-      <div class="line__plate">${it.image ? `<img src="${it.image}" alt="${it.name}" />` : `<span aria-hidden="true">${it.initial}</span>`}</div>
+      ${plate}
       <div class="line__body">
         <span class="line__brand">${it.brand}</span>
-        <span class="line__name">${it.name}</span>
+        ${nameEl}
         <span class="line__size mono">${it.size}</span>
         <div class="line__foot">
           <div class="qty">
@@ -104,7 +129,22 @@ function renderDrawer(cart) {
         </div>
         <button class="line__remove" data-remove="${it.identifier}">Remove</button>
       </div>
-    </div>`).join('');
+    </div>`;
+}
+
+/* "Spend X more" nudge / claim prompt / confirmation. */
+function giftNudge(cart) {
+  if (cart.count === 0) return '';
+  if (cart.gift_claimed) {
+    return `<p class="gift-nudge is-unlocked">A complimentary Bal d'Afrique soap is included with your order.</p>`;
+  }
+  if (cart.gift_qualified) {
+    return `<p class="gift-nudge is-unlocked">You've earned a complimentary soap. <button class="gift-nudge__claim" id="nudgeClaim">Claim your gift</button></p>`;
+  }
+  if (cart.gift_remaining > 0) {
+    return `<p class="gift-nudge">Spend ${gbp(cart.gift_remaining)} more for a complimentary Bal d'Afrique soap.</p>`;
+  }
+  return '';
 }
 
 async function refreshCart() {
@@ -168,24 +208,7 @@ function renderCartPage(cart) {
   if (cart.count === 0) {
     cartLines.innerHTML = `<p class="drawer__empty">${wrap.dataset.empty}</p>`;
   } else {
-    cartLines.innerHTML = cart.items.map(it => `
-      <div class="line">
-        <div class="line__plate">${it.image ? `<img src="${it.image}" alt="${it.name}" />` : `<span aria-hidden="true">${it.initial}</span>`}</div>
-        <div class="line__body">
-          <span class="line__brand">${it.brand}</span>
-          <a class="line__name" href="/product?id=${it.product_identifier}">${it.name}</a>
-          <span class="line__size mono">${it.size}</span>
-          <div class="line__foot">
-            <div class="qty">
-              <button data-dec="${it.identifier}" aria-label="Decrease">−</button>
-              <span>${it.quantity}</span>
-              <button data-inc="${it.identifier}" aria-label="Increase">+</button>
-            </div>
-            <span class="line__price mono">${gbp(it.line_total)}</span>
-          </div>
-          <button class="line__remove" data-remove="${it.identifier}">Remove</button>
-        </div>
-      </div>`).join('');
+    cartLines.innerHTML = giftNudge(cart) + cart.items.map(it => lineHTML(it, true)).join('');
   }
   const set = (id, v) => { const el = $(id); if (el) el.textContent = v; };
   // Items only (+ gift wrap). Delivery is calculated at checkout.
@@ -202,8 +225,8 @@ function renderCheckoutSummary(cart) {
   lines.innerHTML = cart.items.map(it => `
     <div class="coitem">
       <span class="coitem__q mono">${it.quantity}×</span>
-      <span class="coitem__n">${it.brand} — ${it.name} <span class="coitem__size">(${it.size})</span></span>
-      <span class="mono">${gbp(it.line_total)}</span>
+      <span class="coitem__n">${it.brand} — ${it.name} <span class="coitem__size">(${it.size})</span>${it.is_gift ? ' <span class="coitem__size">· Gift</span>' : ''}</span>
+      <span class="mono">${it.is_gift ? 'Free' : gbp(it.line_total)}</span>
     </div>`).join('') || `<p class="drawer__empty">Your bag is empty.</p>`;
   const set = (id, v) => { const el = $(id); if (el) el.textContent = v; };
   set('#coSubtotal', gbp(cart.subtotal_cents));
@@ -383,6 +406,28 @@ if (geoModal && !window.MDB_HAS_CURRENCY && !getCookie('geo_seen')) {
 }
 if ($('#geoOther')) $('#geoOther').addEventListener('click', closeGeo);
 if ($('#geoScrim')) $('#geoScrim').addEventListener('click', closeGeo);
+
+/* ---- Complimentary gift modal ---- */
+const giftModal = $('#giftModal');
+function openGift() { if (!giftModal) return; giftModal.classList.add('is-open'); giftModal.setAttribute('aria-hidden', 'false'); }
+function closeGift() { if (!giftModal) return; giftModal.classList.remove('is-open'); giftModal.setAttribute('aria-hidden', 'true'); }
+function claimGift() {
+  setCookie('GIFT_CLAIMED', '1', 30);
+  setCookie('GIFT_SEEN', '1', 1);
+  closeGift();
+  refreshCart().then(() => openDrawer());
+}
+function maybeShowGift(cart) {
+  if (cart && cart.gift_qualified && !cart.gift_claimed && !getCookie('GIFT_SEEN')) {
+    setCookie('GIFT_SEEN', '1', 1);   // show once (until claimed or a day passes)
+    openGift();
+  }
+}
+if ($('#giftClaim')) $('#giftClaim').addEventListener('click', claimGift);
+if ($('#giftDismiss')) $('#giftDismiss').addEventListener('click', () => { setCookie('GIFT_SEEN', '1', 1); closeGift(); });
+if ($('#giftScrim')) $('#giftScrim').addEventListener('click', () => { setCookie('GIFT_SEEN', '1', 1); closeGift(); });
+/* Claim from the in-cart nudge link */
+document.addEventListener('click', e => { if (e.target.closest('#nudgeClaim')) { e.preventDefault(); claimGift(); } });
 
 /* ============================================================
    ICONS + INITIAL CART LOAD

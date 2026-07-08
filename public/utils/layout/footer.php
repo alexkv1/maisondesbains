@@ -86,6 +86,21 @@ $SEARCH_PRODUCTS = $SEARCH_PRODUCTS ?? [];
   </div>
 </div>
 
+<!-- Complimentary gift -->
+<div class="geo" id="giftModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="giftTitle">
+  <div class="geo__scrim" id="giftScrim"></div>
+  <div class="geo__card">
+    <span class="eyebrow">With our compliments</span>
+    <h2 class="geo__title" id="giftTitle">A gift for you</h2>
+    <p class="geo__text">Your order has earned a complimentary <b>Bal d'Afrique Soap</b> — a milled soap of bergamot and black amber, wrapped by hand.</p>
+    <div class="geo__gift">
+      <img src="/assets/img/bal-dafrique-soap.jpg" alt="Bal d'Afrique Soap" />
+    </div>
+    <button class="btn btn--primary btn--full geo__btn" id="giftClaim">Claim your gift</button>
+    <button class="geo__other" id="giftDismiss">No thank you</button>
+  </div>
+</div>
+
 <script>
   window.MDB_SEARCH = <?= json_encode(array_values($SEARCH_PRODUCTS)) ?>;
   window.MDB_CURRENCY = <?= json_encode(currencies()[currentCurrency()]) ?>;

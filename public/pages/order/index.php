@@ -56,12 +56,13 @@ else:
         <div class="line line--static">
           <div class="line__plate"><span aria-hidden="true"><?= e(mb_substr($it['name'], 0, 1)) ?></span></div>
           <div class="line__body">
-            <span class="line__brand"><?= e($it['brand']) ?></span>
+          <?php $isGift = (int)$it['unit_price_cents'] === 0; ?>
+            <span class="line__brand"><?= e($it['brand']) ?><?= $isGift ? ' · Complimentary' : '' ?></span>
             <span class="line__name"><?= e($it['name']) ?></span>
             <span class="line__size mono"><?= e($it['size']) ?></span>
-            <span class="mono confirm__qty"><?= (int)$it['quantity'] ?> × <?= money((int)$it['unit_price_cents'], $order['currency']) ?></span>
+            <span class="mono confirm__qty"><?= (int)$it['quantity'] ?> × <?= $isGift ? 'Free' : money((int)$it['unit_price_cents'], $order['currency']) ?></span>
           </div>
-          <span class="line__price mono"><?= money((int)$it['unit_price_cents'] * (int)$it['quantity'], $order['currency']) ?></span>
+          <span class="line__price mono"><?= $isGift ? 'Free' : money((int)$it['unit_price_cents'] * (int)$it['quantity'], $order['currency']) ?></span>
         </div>
         <?php endforeach; ?>
       </div>

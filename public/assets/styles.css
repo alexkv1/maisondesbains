@@ -659,3 +659,25 @@ em { font-style: italic; }
   transition: opacity var(--dur-base) var(--ease-standard);
 }
 .geo__other:hover { opacity: var(--hover-dim); }
+.geo__gift { width: 120px; height: 120px; margin: 0 auto var(--space-5); background: var(--paper); border: 1px solid var(--border-hairline); border-radius: var(--radius-sm); display: grid; place-items: center; overflow: hidden; }
+.geo__gift img { width: 100%; height: 100%; object-fit: contain; padding: 10px; }
+.geo .eyebrow { display: block; margin-bottom: var(--space-3); }
+
+/* Gift nudge + free gift line in the cart */
+.gift-nudge {
+  font-family: var(--font-mono); font-size: var(--size-caption); letter-spacing: 0.04em;
+  color: var(--text-secondary); text-align: center; padding: var(--space-4) var(--space-3);
+  border: 1px solid var(--border-hairline); border-radius: var(--radius-sm); margin: var(--space-4) 0;
+}
+.gift-nudge.is-unlocked { color: var(--ink); border-color: var(--border-soft); }
+.gift-nudge__claim {
+  background: none; border: none; cursor: pointer; color: var(--ink);
+  font-family: var(--font-mono); font-size: var(--size-caption);
+  text-decoration: underline; text-underline-offset: 0.25em; padding: 0;
+}
+.line--gift .line__brand { color: var(--ink); }
+.gifttag {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink); border: 1px solid var(--border-soft); border-radius: var(--radius-pill); padding: 4px 12px;
+}
+.line--gift .line__price { font-style: italic; font-family: var(--font-serif); }

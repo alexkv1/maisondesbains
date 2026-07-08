@@ -97,6 +97,29 @@ function cartSummary(DB $db, int $cartId, bool $giftWrap = false): array {
     }
     unset($it);
 
+    // Complimentary gift once the spend threshold is met AND the shopper
+    // has claimed it (via the gift popup).
+    $giftThreshold = $cfg['gift_threshold'];
+    $giftQualified = ($count > 0 && $subtotal >= $giftThreshold);
+    $giftClaimed   = ($_COOKIE['GIFT_CLAIMED'] ?? '') === '1';
+    if ($giftQualified && $giftClaimed) {
+        $g = $db->select(
+            "SELECT v.identifier, v.size, v.sku, p.brand, p.name, p.image, p.identifier AS product_identifier
+               FROM `product_variants` v JOIN `products` p ON p.id = v.product
+              WHERE v.identifier = ? LIMIT 1",
+            [MDB_GIFT_VARIANT], 's'
+        );
+        if ($g) {
+            $gi = $g[0];
+            $items[] = [
+                'identifier' => $gi['identifier'], 'product_identifier' => $gi['product_identifier'],
+                'brand' => $gi['brand'], 'name' => $gi['name'], 'size' => $gi['size'], 'sku' => $gi['sku'],
+                'image' => $gi['image'], 'quantity' => 1, 'unit_price' => 0, 'line_total' => 0,
+                'sold_out' => 0, 'initial' => mb_substr($gi['name'], 0, 1), 'is_gift' => true,
+            ];
+        }
+    }
+
     $giftWrapAmt   = ($giftWrap && $count > 0) ? $cfg['gift_wrap'] : 0;
     $freeThreshold = $cfg['free_threshold'];
     $shipping      = ($count > 0 && $subtotal < $freeThreshold) ? $cfg['shipping'] : 0;
@@ -113,5 +136,9 @@ function cartSummary(DB $db, int $cartId, bool $giftWrap = false): array {
         'gift_wrap_cents'  => $giftWrapAmt,
         'total_cents'      => $total,
         'free_threshold'   => $freeThreshold,
+        'gift_threshold'   => $giftThreshold,
+        'gift_qualified'   => $giftQualified,
+        'gift_claimed'     => $giftQualified && $giftClaimed,
+        'gift_remaining'   => max(0, $giftThreshold - $subtotal),
     ];
 }

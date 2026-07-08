@@ -51,15 +51,20 @@ function currencies(): array {
         'EUR' => [
             'code' => 'EUR', 'symbol' => '€', 'decimals' => 2, 'minor' => 100,
             'thousands' => ',', 'position' => 'before', 'country' => 'Europe',
-            'price_col' => 'price_cents', 'shipping' => 500, 'free_threshold' => 7500, 'gift_wrap' => 400,
+            'price_col' => 'price_cents', 'shipping' => 500, 'free_threshold' => 7500,
+            'gift_wrap' => 400, 'gift_threshold' => 5000,
         ],
         'SEK' => [
             'code' => 'SEK', 'symbol' => 'kr', 'decimals' => 0, 'minor' => 1,
             'thousands' => ' ', 'position' => 'after', 'country' => 'Sweden',
-            'price_col' => 'price_sek', 'shipping' => 59, 'free_threshold' => 850, 'gift_wrap' => 45,
+            'price_col' => 'price_sek', 'shipping' => 59, 'free_threshold' => 850,
+            'gift_wrap' => 45, 'gift_threshold' => 500,
         ],
     ];
 }
+
+/** The complimentary gift: which variant, unlocked above gift_threshold. */
+const MDB_GIFT_VARIANT = 'bal-dafrique-soap-30g';
 
 /** The visitor's selected currency (CUR cookie), defaulting to EUR. */
 function currentCurrency(): string {
