@@ -143,7 +143,7 @@ function lineHTML(it, asLink) {
 function giftNudge(cart) {
   if (cart.count === 0) return '';
   if (cart.gift_claimed) {
-    return `<p class="gift-nudge is-unlocked">A complimentary Bal d'Afrique soap is included with your order.</p>`;
+    return `<p class="gift-nudge is-unlocked">A complimentary gift is included with your order.</p>`;
   }
   if (cart.gift_qualified) {
     return `<p class="gift-nudge is-unlocked">You've earned a complimentary soap. <button class="gift-nudge__claim" id="nudgeClaim">Claim your gift</button></p>`;

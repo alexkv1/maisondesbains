@@ -63,8 +63,16 @@ function currencies(): array {
     ];
 }
 
-/** The complimentary gift: which variant, unlocked above gift_threshold. */
+/** The spend-campaign gift (claimed above gift_threshold by any shopper). */
 const MDB_GIFT_VARIANT = 'bal-dafrique-soap-30g';
+
+/** The complimentary gift included on every Platinum/Diamond order. */
+function perOrderGift(?string $tierKey): ?array {
+    return [
+        'platinum' => ['variant' => 'bal-dafrique-soap-30g',      'label' => 'Platinum gift'],
+        'diamond'  => ['variant' => 'bal-dafrique-shower-gel-50ml', 'label' => 'Diamond gift'],
+    ][$tierKey] ?? null;
+}
 
 /** Maximum quantity of any single item allowed in the cart. */
 const MDB_MAX_PER_ITEM = 10;

@@ -167,36 +167,44 @@ function cartSummary(DB $db, int $cartId, bool $giftWrap = false, ?string $tierK
     }
     unset($it);
 
-    // Complimentary gift: unlocked by spend threshold (claimed via popup),
-    // or automatically for Platinum/Diamond members on every order.
+    // Complimentary per-order gift:
+    //  · Platinum/Diamond members get a tier gift on every order (revealed).
+    //  · Everyone else can claim a gift once the spend threshold is met.
     $giftThreshold = $cfg['gift_threshold'];
     $autoGift      = $benefits['auto_gift'];
-    $giftQualified = ($count > 0 && ($subtotal >= $giftThreshold || $autoGift));
-    $giftClaimed   = $autoGift || (($_COOKIE['GIFT_CLAIMED'] ?? '') === '1');
-    if ($giftQualified && $giftClaimed) {
+    if ($autoGift) {
+        $tg = perOrderGift($tierKey);
+        $giftVariant = $tg['variant'] ?? MDB_GIFT_VARIANT;
+        $giftLabel   = $tg['label'] ?? 'Gift';
+        $giftInclude = $count > 0;
+        $giftQualified = $count > 0;   // members always qualify
+    } else {
+        $giftVariant = MDB_GIFT_VARIANT;
+        $giftLabel   = 'Gift';
+        $giftQualified = ($count > 0 && $subtotal >= $giftThreshold);
+        $giftInclude = $giftQualified && (($_COOKIE['GIFT_CLAIMED'] ?? '') === '1');
+    }
+    if ($giftInclude) {
         $g = $db->select(
             "SELECT v.id AS variant_id, v.identifier, v.size, v.sku, p.brand, p.name, p.image, p.identifier AS product_identifier
                FROM `product_variants` v JOIN `products` p ON p.id = v.product
               WHERE v.identifier = ? LIMIT 1",
-            [MDB_GIFT_VARIANT], 's'
+            [$giftVariant], 's'
         );
         if ($g) {
             $gi = $g[0];
-            // Platinum/Diamond auto-gift is a surprise — mask the product.
-            // The spend-threshold claim reveals the soap.
-            $masked = $autoGift;
             $items[] = [
                 'identifier'         => $gi['identifier'],
-                'product_identifier' => $masked ? null : $gi['product_identifier'],
+                'product_identifier' => $gi['product_identifier'],
                 'variant_id'         => (int)$gi['variant_id'],
-                'brand'              => $masked ? 'With our compliments' : $gi['brand'],
-                'name'               => $masked ? 'A complimentary gift' : $gi['name'],
-                'size'               => $masked ? '' : $gi['size'],
-                'sku'                => $gi['sku'],       // real SKU kept for fulfilment
-                'image'              => $masked ? null : $gi['image'],
+                'brand'              => $gi['brand'],
+                'name'               => $gi['name'],
+                'size'               => $gi['size'],
+                'sku'                => $gi['sku'],
+                'image'              => $gi['image'],
                 'quantity' => 1, 'unit_price' => 0, 'line_total' => 0, 'sold_out' => 0,
-                'initial'  => $masked ? '✻' : mb_substr($gi['name'], 0, 1),
-                'is_gift'  => true, 'is_masked' => $masked, 'gift_label' => 'Gift',
+                'initial'  => mb_substr($gi['name'], 0, 1),
+                'is_gift'  => true, 'is_masked' => false, 'gift_label' => $giftLabel,
             ];
         }
     }
@@ -246,8 +254,8 @@ function cartSummary(DB $db, int $cartId, bool $giftWrap = false, ?string $tierK
         'free_threshold'   => $freeThreshold,
         'gift_threshold'   => $giftThreshold,
         'gift_qualified'   => $giftQualified,
-        'gift_claimed'     => $giftQualified && $giftClaimed,
-        'gift_remaining'   => max(0, $giftThreshold - $subtotal),
+        'gift_claimed'     => $giftInclude,
+        'gift_remaining'   => $autoGift ? 0 : max(0, $giftThreshold - $subtotal),
         'free_wrap'        => $benefits['free_wrap'],
         'free_shipping'    => $benefits['free_shipping'],
     ];
