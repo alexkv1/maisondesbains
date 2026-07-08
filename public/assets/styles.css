@@ -80,6 +80,7 @@ em { font-style: italic; }
 }
 .announce span:nth-child(2) { text-align: center; }
 .announce span:last-child { text-align: right; }
+.announce--center { justify-content: center; }
 
 /* ============================================================
    HEADER
@@ -583,3 +584,48 @@ em { font-style: italic; }
 @media (max-width: 480px) {
   .field-row { grid-template-columns: 1fr; }
 }
+
+/* ============================================================
+   CURRENCY SWITCHER (footer)
+   ============================================================ */
+.curswitch { display: inline-flex; gap: 2px; }
+.curswitch__btn {
+  background: none; border: none; cursor: pointer; padding: 2px 8px;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--gray-500);
+  transition: color var(--dur-base) var(--ease-standard);
+}
+.curswitch__btn:hover { color: var(--gray-300); }
+.curswitch__btn.is-active { color: var(--ivory); text-decoration: underline; text-underline-offset: 0.3em; }
+
+/* ============================================================
+   GEO / CURRENCY WELCOME MODAL
+   ============================================================ */
+.geo {
+  position: fixed; inset: 0; z-index: 1200; display: grid; place-items: center;
+  opacity: 0; pointer-events: none; transition: opacity var(--dur-slow) var(--ease-standard);
+}
+.geo.is-open { opacity: 1; pointer-events: auto; }
+.geo__scrim { position: absolute; inset: 0; background: var(--surface-overlay); backdrop-filter: blur(3px); }
+.geo__card {
+  position: relative; z-index: 1; width: min(440px, 92vw);
+  background: var(--paper); border: 1px solid var(--border-hairline);
+  padding: clamp(2.2rem, 5vw, 3.2rem) clamp(1.8rem, 4vw, 2.8rem);
+  text-align: center; box-shadow: var(--shadow-modal);
+  transform: translateY(12px); transition: transform var(--dur-slow) var(--ease-standard);
+}
+.geo.is-open .geo__card { transform: none; }
+.geo__title {
+  font-family: var(--font-serif); font-weight: var(--weight-light);
+  font-size: clamp(1.8rem, 4vw, 2.4rem); line-height: 1.1; margin-bottom: var(--space-4);
+}
+.geo__text { color: var(--text-secondary); font-size: var(--size-body); line-height: 1.6; margin-bottom: var(--space-6); }
+.geo__text b { color: var(--ink); font-weight: var(--weight-medium); }
+.geo__btn { margin-bottom: var(--space-3); }
+.geo__other {
+  margin-top: var(--space-3); background: none; border: none; cursor: pointer;
+  font-family: var(--font-grotesk); font-size: var(--size-small); color: var(--ink-soft);
+  text-decoration: underline; text-underline-offset: 0.3em;
+  transition: opacity var(--dur-base) var(--ease-standard);
+}
+.geo__other:hover { opacity: var(--hover-dim); }

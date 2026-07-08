@@ -12,7 +12,7 @@ if (!$AUTH->valid) {
 
 // Order history, rendered server-side.
 $orders = $db->select(
-    "SELECT `reference`, `total_cents`, `status`, `date_created`
+    "SELECT `reference`, `total_cents`, `currency`, `status`, `date_created`
        FROM `orders` WHERE `user` = ? ORDER BY `id` DESC",
     [$AUTH->user], 'i'
 ) ?: [];
@@ -43,7 +43,7 @@ require $root . '/utils/layout/header.php';
             <td class="mono"><?= e($o['reference']) ?></td>
             <td><?= e(date('j M Y', (int)$o['date_created'])) ?></td>
             <td><span class="pill pill--<?= e($o['status']) ?>"><?= e(ucfirst($o['status'])) ?></span></td>
-            <td class="mono ta-r"><?= money((int)$o['total_cents']) ?></td>
+            <td class="mono ta-r"><?= money((int)$o['total_cents'], $o['currency']) ?></td>
             <td class="ta-r"><a class="orders__view" href="/order?ref=<?= e($o['reference']) ?>">View</a></td>
           </tr>
           <?php endforeach; ?>

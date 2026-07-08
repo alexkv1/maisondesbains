@@ -58,21 +58,21 @@ else:
           <div class="line__body">
             <span class="line__brand"><?= e($it['brand']) ?></span>
             <span class="line__name"><?= e($it['name']) ?></span>
-            <span class="mono confirm__qty"><?= (int)$it['quantity'] ?> × <?= money((int)$it['unit_price_cents']) ?></span>
+            <span class="mono confirm__qty"><?= (int)$it['quantity'] ?> × <?= money((int)$it['unit_price_cents'], $order['currency']) ?></span>
           </div>
-          <span class="line__price mono"><?= money((int)$it['unit_price_cents'] * (int)$it['quantity']) ?></span>
+          <span class="line__price mono"><?= money((int)$it['unit_price_cents'] * (int)$it['quantity'], $order['currency']) ?></span>
         </div>
         <?php endforeach; ?>
       </div>
 
       <aside class="confirm__summary">
         <span class="eyebrow">Summary</span>
-        <div class="summary__row"><span>Subtotal</span><span class="mono"><?= money((int)$order['subtotal_cents']) ?></span></div>
-        <div class="summary__row"><span>Delivery</span><span class="mono"><?= (int)$order['shipping_cents'] === 0 ? 'Complimentary' : money((int)$order['shipping_cents']) ?></span></div>
+        <div class="summary__row"><span>Subtotal</span><span class="mono"><?= money((int)$order['subtotal_cents'], $order['currency']) ?></span></div>
+        <div class="summary__row"><span>Delivery</span><span class="mono"><?= (int)$order['shipping_cents'] === 0 ? 'Complimentary' : money((int)$order['shipping_cents'], $order['currency']) ?></span></div>
         <?php if ((int)$order['gift_wrap_cents'] > 0): ?>
-        <div class="summary__row"><span>Gift wrap</span><span class="mono"><?= money((int)$order['gift_wrap_cents']) ?></span></div>
+        <div class="summary__row"><span>Gift wrap</span><span class="mono"><?= money((int)$order['gift_wrap_cents'], $order['currency']) ?></span></div>
         <?php endif; ?>
-        <div class="summary__row summary__row--total"><span>Total</span><span class="mono"><?= money((int)$order['total_cents']) ?></span></div>
+        <div class="summary__row summary__row--total"><span>Total</span><span class="mono"><?= money((int)$order['total_cents'], $order['currency']) ?></span></div>
 
         <div class="confirm__ship">
           <span class="eyebrow">Delivering to</span>

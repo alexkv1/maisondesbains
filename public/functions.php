@@ -39,9 +39,62 @@ function respond(array $payload, int $status = 200): void {
     exit;
 }
 
-/** Format integer pence as €X.XX. */
-function money(int $pence): string {
-    return '€' . number_format($pence / 100, 2);
+/**
+ * Currencies. Each product carries a SET price per currency (no conversion),
+ * so prices are always clean. Amounts everywhere are integers in the
+ * currency's smallest displayed unit: EUR in cents (÷100, 2 decimals),
+ * SEK in whole kronor (÷1, 0 decimals). Shipping, the free-delivery
+ * threshold and gift wrap are likewise set per currency.
+ */
+function currencies(): array {
+    return [
+        'EUR' => [
+            'code' => 'EUR', 'symbol' => '€', 'decimals' => 2, 'minor' => 100,
+            'thousands' => ',', 'position' => 'before', 'country' => 'Europe',
+            'price_col' => 'price_cents', 'shipping' => 500, 'free_threshold' => 7500, 'gift_wrap' => 400,
+        ],
+        'SEK' => [
+            'code' => 'SEK', 'symbol' => 'kr', 'decimals' => 0, 'minor' => 1,
+            'thousands' => ' ', 'position' => 'after', 'country' => 'Sweden',
+            'price_col' => 'price_sek', 'shipping' => 59, 'free_threshold' => 850, 'gift_wrap' => 45,
+        ],
+    ];
+}
+
+/** The visitor's selected currency (CUR cookie), defaulting to EUR. */
+function currentCurrency(): string {
+    $c = strtoupper($_COOKIE['CUR'] ?? 'EUR');
+    return isset(currencies()[$c]) ? $c : 'EUR';
+}
+
+/** A product's set price (integer, in the currency's unit). */
+function productPrice(array $p, ?string $code = null): int {
+    $code = $code && isset(currencies()[$code]) ? $code : currentCurrency();
+    return (int) $p[currencies()[$code]['price_col']];
+}
+
+/**
+ * Format an integer amount that is already in $code's unit.
+ * $code defaults to the visitor's currency.
+ */
+function money(int $amount, ?string $code = null): string {
+    $code = $code && isset(currencies()[$code]) ? $code : currentCurrency();
+    $cur  = currencies()[$code];
+    $num  = number_format($amount / $cur['minor'], $cur['decimals'], '.', $cur['thousands']);
+    return $cur['position'] === 'before' ? $cur['symbol'] . $num : $num . ' ' . $cur['symbol'];
+}
+
+/** Minor-unit integer amount for a payment processor (EUR cents / SEK öre). */
+function paymentMinor(int $amount, string $code): int {
+    return $code === 'EUR' ? $amount : $amount * 100;
+}
+
+/** Free-delivery threshold, formatted without trailing decimals (e.g. €75, 850 kr). */
+function freeShippingLabel(?string $code = null): string {
+    $code = $code && isset(currencies()[$code]) ? $code : currentCurrency();
+    $cur  = currencies()[$code];
+    $num  = number_format($cur['free_threshold'] / $cur['minor'], 0, '.', $cur['thousands']);
+    return $cur['position'] === 'before' ? $cur['symbol'] . $num : $num . ' ' . $cur['symbol'];
 }
 
 /** True if the request method matches, else 405. */

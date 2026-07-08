@@ -31,6 +31,13 @@ $SEARCH_PRODUCTS = $SEARCH_PRODUCTS ?? [];
   </div>
   <div class="footer__base">
     <span>© <?= date('Y') ?> Maison Des Bains</span>
+    <div class="curswitch" role="group" aria-label="Currency">
+      <?php $__cur = currentCurrency(); foreach (currencies() as $__c): ?>
+      <button class="curswitch__btn<?= $__cur === $__c['code'] ? ' is-active' : '' ?>" data-set-currency="<?= $__c['code'] ?>">
+        <?= $__c['symbol'] ?> <?= $__c['code'] ?>
+      </button>
+      <?php endforeach; ?>
+    </div>
     <span>MDB · Paris</span>
   </div>
 </footer>
@@ -50,9 +57,9 @@ $SEARCH_PRODUCTS = $SEARCH_PRODUCTS ?? [];
     </div>
     <div class="drawer__row">
       <span>Subtotal</span>
-      <span id="drawerTotal" class="mono">€0.00</span>
+      <span id="drawerTotal" class="mono"><?= money(0) ?></span>
     </div>
-    <p class="drawer__ship">Complimentary delivery over €75. Taxes calculated at checkout.</p>
+    <p class="drawer__ship">Complimentary delivery over <?= freeShippingLabel() ?>. Taxes calculated at checkout.</p>
     <a class="btn btn--primary btn--full" href="/checkout" id="checkoutBtn">Proceed to checkout</a>
   </div>
 </aside>
@@ -67,8 +74,22 @@ $SEARCH_PRODUCTS = $SEARCH_PRODUCTS ?? [];
   <div class="search__results" id="searchResults"></div>
 </div>
 
+<!-- Location / currency welcome -->
+<div class="geo" id="geoModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="geoTitle">
+  <div class="geo__scrim" id="geoScrim"></div>
+  <div class="geo__card">
+    <h2 class="geo__title" id="geoTitle">Shipping Worldwide</h2>
+    <p class="geo__text" id="geoText">Would you like to see prices in your local currency?</p>
+    <button class="btn btn--primary btn--full geo__btn" id="geoPrimary" data-set-currency="EUR">Europe — € EUR</button>
+    <button class="btn btn--secondary btn--full geo__btn" id="geoSecondary" data-set-currency="SEK">Sweden — kr SEK</button>
+    <button class="geo__other" id="geoOther">Other locations</button>
+  </div>
+</div>
+
 <script>
   window.MDB_SEARCH = <?= json_encode(array_values($SEARCH_PRODUCTS)) ?>;
+  window.MDB_CURRENCY = <?= json_encode(currencies()[currentCurrency()]) ?>;
+  window.MDB_HAS_CURRENCY = <?= isset($_COOKIE['CUR']) ? 'true' : 'false' ?>;
 </script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <script src="/assets/app.js"></script>

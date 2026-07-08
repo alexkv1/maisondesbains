@@ -64,11 +64,14 @@ function setCartCookie(string $token): void {
     $_COOKIE['CART'] = $token;
 }
 
-/** Full cart contents + totals. */
+/** Full cart contents + totals, computed in the visitor's active currency. */
 function cartSummary(DB $db, int $cartId, bool $giftWrap = false): array {
+    $currency = currentCurrency();
+    $cfg = currencies()[$currency];
+
     $items = $db->select(
         "SELECT ci.id AS item_id, ci.quantity, p.id AS product_id, p.identifier,
-                p.brand, p.name, p.line, p.price_cents, p.sku, p.sold_out
+                p.brand, p.name, p.line, p.price_cents, p.price_sek, p.sku, p.sold_out
            FROM `cart_items` ci
            JOIN `products` p ON p.id = ci.product
           WHERE ci.cart = ?
@@ -84,25 +87,28 @@ function cartSummary(DB $db, int $cartId, bool $giftWrap = false): array {
     $count = 0;
     foreach ($items as &$it) {
         $it['quantity']    = (int)$it['quantity'];
-        $it['price_cents'] = (int)$it['price_cents'];
-        $it['line_total']  = $it['price_cents'] * $it['quantity'];
+        $it['unit_price']  = productPrice($it, $currency);
+        $it['line_total']  = $it['unit_price'] * $it['quantity'];
         $it['initial']     = mb_substr($it['name'], 0, 1);
         $subtotal += $it['line_total'];
         $count += $it['quantity'];
     }
     unset($it);
 
-    $giftWrapCents = ($giftWrap && $count > 0) ? 400 : 0;
-    $freeThreshold = 7500;
-    $shipping = ($count > 0 && $subtotal < $freeThreshold) ? 500 : 0;
-    $total = $subtotal + $shipping + $giftWrapCents;
+    $giftWrapAmt   = ($giftWrap && $count > 0) ? $cfg['gift_wrap'] : 0;
+    $freeThreshold = $cfg['free_threshold'];
+    $shipping      = ($count > 0 && $subtotal < $freeThreshold) ? $cfg['shipping'] : 0;
+    $total         = $subtotal + $shipping + $giftWrapAmt;
 
+    // Keys keep the *_cents suffix for continuity; values are integers in the
+    // active currency's unit (EUR cents or SEK kronor).
     return [
+        'currency'         => $currency,
         'items'            => $items,
         'count'            => $count,
         'subtotal_cents'   => $subtotal,
         'shipping_cents'   => $shipping,
-        'gift_wrap_cents'  => $giftWrapCents,
+        'gift_wrap_cents'  => $giftWrapAmt,
         'total_cents'      => $total,
         'free_threshold'   => $freeThreshold,
     ];

@@ -43,20 +43,21 @@ foreach ($summary['items'] as $it) {
 
 // ---- Create the order (pending) with an immutable snapshot of the cart ----
 $reference = generateOrderReference();
+$currency = $summary['currency'];
 $db->execute(
     "INSERT INTO `orders`
        (`reference`, `user`, `email`, `first_name`, `last_name`,
         `address_line1`, `address_line2`, `city`, `postcode`, `country`,
         `subtotal_cents`, `shipping_cents`, `gift_wrap_cents`, `total_cents`,
-        `gift_wrap`, `status`, `date_created`)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)",
+        `gift_wrap`, `currency`, `status`, `date_created`)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)",
     [
         $reference, $userId, $email, $firstName, $lastName,
         $line1, $line2, $city, $postcode, $country,
         $summary['subtotal_cents'], $summary['shipping_cents'], $summary['gift_wrap_cents'], $summary['total_cents'],
-        $giftWrap ? 1 : 0, time(),
+        $giftWrap ? 1 : 0, $currency, time(),
     ],
-    'sissssssssiiiiii'
+    'sissssssssiiiiisi'
 );
 $orderId = (int)$db->lastInsertId();
 
@@ -64,7 +65,7 @@ foreach ($summary['items'] as $it) {
     $db->execute(
         "INSERT INTO `order_items` (`order`, `product`, `brand`, `name`, `sku`, `unit_price_cents`, `quantity`)
          VALUES (?, ?, ?, ?, ?, ?, ?)",
-        [$orderId, $it['product_id'], $it['brand'], $it['name'], $it['sku'], $it['price_cents'], $it['quantity']],
+        [$orderId, $it['product_id'], $it['brand'], $it['name'], $it['sku'], $it['unit_price'], $it['quantity']],
         'iisssii'
     );
 }
@@ -77,26 +78,27 @@ if ($stripeKey !== '' && file_exists(__DIR__ . '/../../vendor/autoload.php')) {
     require_once __DIR__ . '/../../vendor/autoload.php';
     \Stripe\Stripe::setApiKey($stripeKey);
 
+    $stripeCurrency = strtolower($currency);
     $lineItems = [];
     foreach ($summary['items'] as $it) {
         $lineItems[] = [
             'quantity' => $it['quantity'],
             'price_data' => [
-                'currency' => 'gbp',
-                'unit_amount' => $it['price_cents'],
+                'currency' => $stripeCurrency,
+                'unit_amount' => paymentMinor($it['unit_price'], $currency),
                 'product_data' => ['name' => $it['brand'] . ' — ' . $it['name']],
             ],
         ];
     }
     if ($summary['shipping_cents'] > 0) {
         $lineItems[] = ['quantity' => 1, 'price_data' => [
-            'currency' => 'gbp', 'unit_amount' => $summary['shipping_cents'],
+            'currency' => $stripeCurrency, 'unit_amount' => paymentMinor($summary['shipping_cents'], $currency),
             'product_data' => ['name' => 'Delivery'],
         ]];
     }
     if ($summary['gift_wrap_cents'] > 0) {
         $lineItems[] = ['quantity' => 1, 'price_data' => [
-            'currency' => 'gbp', 'unit_amount' => $summary['gift_wrap_cents'],
+            'currency' => $stripeCurrency, 'unit_amount' => paymentMinor($summary['gift_wrap_cents'], $currency),
             'product_data' => ['name' => 'Gift wrap'],
         ]];
     }

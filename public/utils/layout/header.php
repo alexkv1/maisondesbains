@@ -19,10 +19,8 @@ $signedIn   = isset($AUTH) && $AUTH->valid;
 </head>
 <body>
 
-<div class="announce">
-  <span>Complimentary delivery over €75</span>
-  <span>Paris · London · New York</span>
-  <span>The Bath, Curated</span>
+<div class="announce announce--center">
+  <span>Complimentary delivery over <?= freeShippingLabel() ?></span>
 </div>
 
 <header class="header" id="header">

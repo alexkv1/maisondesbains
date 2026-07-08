@@ -10,7 +10,7 @@ function renderCard(array $p): string {
     $brand   = e($p['brand']);
     $name    = e($p['name']);
     $cat     = e($p['category']);
-    $price   = money((int)$p['price_cents']);
+    $price   = money(productPrice($p));
     $sku     = e($p['sku']);
     $initial = e(mb_substr($p['name'], 0, 1));
     $soldOut = (int)$p['sold_out'] === 1;

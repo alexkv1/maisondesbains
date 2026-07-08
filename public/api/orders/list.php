@@ -8,7 +8,7 @@ if (!$AUTH->valid) {
 }
 
 $orders = $db->select(
-    "SELECT `reference`, `total_cents`, `status`, `date_created`
+    "SELECT `reference`, `total_cents`, `currency`, `status`, `date_created`
        FROM `orders` WHERE `user` = ? ORDER BY `id` DESC",
     [$AUTH->user],
     'i'

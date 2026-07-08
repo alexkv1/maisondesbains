@@ -27,7 +27,7 @@ $related = $db->select(
 
 $SEARCH_PRODUCTS = array_map(fn($x) => [
     'id' => $x['identifier'], 'name' => $x['name'], 'brand' => $x['brand'],
-    'line' => $x['line'], 'notes' => $x['notes'], 'price' => money((int)$x['price_cents']),
+    'line' => $x['line'], 'notes' => $x['notes'], 'price' => money(productPrice($x)),
 ], $db->select("SELECT * FROM `products` WHERE `status` = 1") ?: []);
 
 $PAGE_TITLE = $p['brand'] . ' ' . $p['name'] . ' — Maison Des Bains';
@@ -49,7 +49,7 @@ require $root . '/utils/layout/header.php';
       <span class="card__brand"><?= e($p['brand']) ?></span>
       <h1 class="product__name"><?= e($p['name']) ?></h1>
       <p class="product__line mono"><?= e($p['line']) ?></p>
-      <p class="product__price mono"><?= money((int)$p['price_cents']) ?></p>
+      <p class="product__price mono"><?= money(productPrice($p)) ?></p>
 
       <p class="product__blurb"><?= e($p['blurb']) ?></p>
 
@@ -65,13 +65,13 @@ require $root . '/utils/layout/header.php';
           <button class="btn btn--secondary" disabled>Sold Out</button>
           <p class="product__soldnote">Sign in to be told when it returns to the house.</p>
         <?php else: ?>
-          <button class="btn btn--primary btn--lg" id="pdpAdd" data-add="<?= e($p['identifier']) ?>">Add to Basket — <?= money((int)$p['price_cents']) ?></button>
+          <button class="btn btn--primary btn--lg" id="pdpAdd" data-add="<?= e($p['identifier']) ?>">Add to Basket — <?= money(productPrice($p)) ?></button>
           <button class="card__wish product__wish" data-wish="<?= e($p['identifier']) ?>" aria-label="Add to wishlist"><?= MDB_HEART ?></button>
         <?php endif; ?>
       </div>
 
       <ul class="product__meta-list">
-        <li><span>—</span> Complimentary delivery over €75</li>
+        <li><span>—</span> Complimentary delivery over <?= freeShippingLabel() ?></li>
         <li><span>—</span> Wrapped by hand in unmarked paper</li>
         <li><span>—</span> Selected by the Maison, never manufactured</li>
       </ul>

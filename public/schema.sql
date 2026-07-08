@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS `products` (
   `name`        VARCHAR(160) NOT NULL,
   `line`        VARCHAR(120) NOT NULL DEFAULT '',
   `category`    VARCHAR(32)  NOT NULL DEFAULT 'Soap',
-  `price_cents` INT UNSIGNED NOT NULL,
+  `price_cents` INT UNSIGNED NOT NULL,           -- EUR, in cents
+  `price_sek`   INT UNSIGNED NOT NULL DEFAULT 0, -- SEK, in whole kronor
   `sku`         VARCHAR(40)  NOT NULL DEFAULT '',
   `notes`       VARCHAR(255) NOT NULL DEFAULT '',
   `blurb`       TEXT,
@@ -92,6 +93,7 @@ CREATE TABLE IF NOT EXISTS `orders` (
   `gift_wrap_cents` INT UNSIGNED NOT NULL DEFAULT 0,
   `total_cents`     INT UNSIGNED NOT NULL DEFAULT 0,
   `gift_wrap`       TINYINT(1)   NOT NULL DEFAULT 0,
+  `currency`        VARCHAR(3)   NOT NULL DEFAULT 'EUR',
   `status`          VARCHAR(20)  NOT NULL DEFAULT 'pending', -- pending | paid | cancelled
   `stripe_session`  VARCHAR(255) DEFAULT NULL,
   `date_created`    INT UNSIGNED NOT NULL DEFAULT 0,
@@ -120,15 +122,15 @@ CREATE TABLE IF NOT EXISTS `order_items` (
 -- Seed catalogue
 -- ============================================================
 INSERT INTO `products`
-  (`identifier`, `brand`, `name`, `line`, `category`, `price_cents`, `sku`, `notes`, `blurb`, `badge`, `sold_out`, `date_created`)
+  (`identifier`, `brand`, `name`, `line`, `category`, `price_cents`, `price_sek`, `sku`, `notes`, `blurb`, `badge`, `sold_out`, `date_created`)
 VALUES
-  ('santal-33-shower-gel',    'Le Labo', 'Santal 33 Shower Gel',    '90 ml',  'Wash', 2000, 'MDB·LL—901', 'Sandalwood · Cardamom · Iris · Leather', 'The cult Santal 33, drawn into a lathering shower gel. Smoky sandalwood and iris, left on warm skin.',        NULL, 0, UNIX_TIMESTAMP()),
-  ('santal-33-body-lotion',   'Le Labo', 'Santal 33 Body Lotion',   '90 ml',  'Body', 2000, 'MDB·LL—902', 'Sandalwood · Violet · Cardamom · Amber', 'A weightless lotion carrying Santal 33''s smoky sandalwood and violet. Sinks in, lingers for hours.',        NULL, 0, UNIX_TIMESTAMP()),
-  ('bal-dafrique-shower-gel', 'Byredo',  'Bal d''Afrique Shower Gel','50 ml',  'Wash', 1500, 'MDB·BY—501', 'Bergamot · Neroli · Marigold · Vetiver', 'Byredo''s Bal d''Afrique as a travel shower gel — African marigold, neroli and warm vetiver.',               NULL, 0, UNIX_TIMESTAMP()),
-  ('bal-dafrique-body-lotion','Byredo',  'Bal d''Afrique Body Lotion','50 ml', 'Body', 1500, 'MDB·BY—502', 'Bergamot · Violet · Vetiver · Musk',     'A supple body lotion of bergamot, violet and vetiver. The 1920s Paris–Africa reverie, worn on skin.',        NULL, 0, UNIX_TIMESTAMP()),
-  ('bal-dafrique-soap',       'Byredo',  'Bal d''Afrique Soap',      '30 g',   'Soap',  800, 'MDB·BY—030', 'Bergamot · Neroli · Black Amber',        'A petite milled soap of Bal d''Afrique — bergamot and black amber, kept by the basin.',                       NULL, 0, UNIX_TIMESTAMP()),
-  ('bal-dafrique-hand-wash',  'Byredo',  'Bal d''Afrique Hand Wash', '450 ml', 'Wash', 3900, 'MDB·BY—450', 'Bergamot · Neroli · Vetiver · Amber',    'A generous hand wash of Bal d''Afrique. Neroli and vetiver, left on the hands like a signature.',            NULL, 0, UNIX_TIMESTAMP())
+  ('santal-33-shower-gel',    'Le Labo', 'Santal 33 Shower Gel',    '90 ml',  'Wash', 2000, 229, 'MDB·LL—901', 'Sandalwood · Cardamom · Iris · Leather', 'The cult Santal 33, drawn into a lathering shower gel. Smoky sandalwood and iris, left on warm skin.',        NULL, 0, UNIX_TIMESTAMP()),
+  ('santal-33-body-lotion',   'Le Labo', 'Santal 33 Body Lotion',   '90 ml',  'Body', 2000, 229, 'MDB·LL—902', 'Sandalwood · Violet · Cardamom · Amber', 'A weightless lotion carrying Santal 33''s smoky sandalwood and violet. Sinks in, lingers for hours.',        NULL, 0, UNIX_TIMESTAMP()),
+  ('bal-dafrique-shower-gel', 'Byredo',  'Bal d''Afrique Shower Gel','50 ml',  'Wash', 1500, 169, 'MDB·BY—501', 'Bergamot · Neroli · Marigold · Vetiver', 'Byredo''s Bal d''Afrique as a travel shower gel — African marigold, neroli and warm vetiver.',               NULL, 0, UNIX_TIMESTAMP()),
+  ('bal-dafrique-body-lotion','Byredo',  'Bal d''Afrique Body Lotion','50 ml', 'Body', 1500, 169, 'MDB·BY—502', 'Bergamot · Violet · Vetiver · Musk',     'A supple body lotion of bergamot, violet and vetiver. The 1920s Paris–Africa reverie, worn on skin.',        NULL, 0, UNIX_TIMESTAMP()),
+  ('bal-dafrique-soap',       'Byredo',  'Bal d''Afrique Soap',      '30 g',   'Soap',  800,  89, 'MDB·BY—030', 'Bergamot · Neroli · Black Amber',        'A petite milled soap of Bal d''Afrique — bergamot and black amber, kept by the basin.',                       NULL, 0, UNIX_TIMESTAMP()),
+  ('bal-dafrique-hand-wash',  'Byredo',  'Bal d''Afrique Hand Wash', '450 ml', 'Wash', 3900, 449, 'MDB·BY—450', 'Bergamot · Neroli · Vetiver · Amber',    'A generous hand wash of Bal d''Afrique. Neroli and vetiver, left on the hands like a signature.',            NULL, 0, UNIX_TIMESTAMP())
 ON DUPLICATE KEY UPDATE
   `brand`=VALUES(`brand`), `name`=VALUES(`name`), `line`=VALUES(`line`), `category`=VALUES(`category`),
-  `price_cents`=VALUES(`price_cents`), `sku`=VALUES(`sku`), `notes`=VALUES(`notes`), `blurb`=VALUES(`blurb`),
+  `price_cents`=VALUES(`price_cents`), `price_sek`=VALUES(`price_sek`), `sku`=VALUES(`sku`), `notes`=VALUES(`notes`), `blurb`=VALUES(`blurb`),
   `badge`=VALUES(`badge`), `sold_out`=VALUES(`sold_out`);

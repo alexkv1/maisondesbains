@@ -18,7 +18,25 @@ async function api(path, opts = {}) {
   return { ok: res.ok, status: res.status, data };
 }
 const post = (path, body) => api(path, { method: 'POST', body: JSON.stringify(body || {}) });
-const gbp = c => '€' + (c / 100).toFixed(2);
+
+/* Format an integer amount (already in the active currency's unit). */
+function fmtAmount(amount) {
+  const c = window.MDB_CURRENCY || { symbol: '€', minor: 100, decimals: 2, thousands: ',', position: 'before' };
+  const parts = (amount / c.minor).toFixed(c.decimals).split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, c.thousands);
+  const s = parts.join('.');
+  return c.position === 'before' ? c.symbol + s : s + ' ' + c.symbol;
+}
+const gbp = fmtAmount;
+
+/* Cookies (currency selection). */
+function setCookie(k, v, days) {
+  const d = new Date(); d.setTime(d.getTime() + days * 864e5);
+  document.cookie = `${k}=${v};expires=${d.toUTCString()};path=/;samesite=Lax`;
+}
+function getCookie(k) {
+  return document.cookie.split('; ').find(r => r.startsWith(k + '='))?.split('=')[1];
+}
 
 /* ============================================================
    FILTERS (home)
@@ -297,6 +315,55 @@ if (signupForm) signupForm.addEventListener('submit', e => {
   e.preventDefault(); signupForm.reset();
   $('#signupNote').textContent = 'Thank you. We will write soon.';
 });
+
+/* ============================================================
+   CURRENCY SWITCH + GEO WELCOME
+   ============================================================ */
+document.addEventListener('click', e => {
+  const btn = e.target.closest('[data-set-currency]');
+  if (!btn) return;
+  setCookie('CUR', btn.dataset.setCurrency, 365);
+  setCookie('geo_seen', '1', 365);
+  window.location.reload();
+});
+
+const geoModal = $('#geoModal');
+function closeGeo() {
+  if (!geoModal) return;
+  geoModal.classList.remove('is-open');
+  geoModal.setAttribute('aria-hidden', 'true');
+  setCookie('geo_seen', '1', 365);
+}
+if (geoModal && !window.MDB_HAS_CURRENCY && !getCookie('geo_seen')) {
+  setTimeout(async () => {
+    let code = '', name = '';
+    try {
+      const r = await fetch('https://ipapi.co/json/');
+      const j = await r.json();
+      code = j.country_code || ''; name = j.country_name || '';
+    } catch (err) {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+      if (tz === 'Europe/Stockholm') { code = 'SE'; name = 'Sweden'; }
+    }
+    const isSE = code === 'SE';
+    const text = $('#geoText'), primary = $('#geoPrimary'), secondary = $('#geoSecondary');
+    if (isSE) {
+      text.innerHTML = `You are visiting us from <b>${name || 'Sweden'}</b>. Prices are shown in <b>SEK</b>.`;
+      primary.dataset.setCurrency = 'SEK'; primary.textContent = 'Sweden — kr SEK';
+      secondary.dataset.setCurrency = 'EUR'; secondary.textContent = 'Continue to Europe — € EUR';
+    } else {
+      text.innerHTML = name
+        ? `You are visiting us from <b>${name}</b>. Prices are shown in <b>EUR</b>.`
+        : `Prices are shown in <b>EUR</b>. Would you like Swedish kronor?`;
+      primary.dataset.setCurrency = 'EUR'; primary.textContent = 'Europe — € EUR';
+      secondary.dataset.setCurrency = 'SEK'; secondary.textContent = 'Sweden — kr SEK';
+    }
+    geoModal.classList.add('is-open');
+    geoModal.setAttribute('aria-hidden', 'false');
+  }, 1200);
+}
+if ($('#geoOther')) $('#geoOther').addEventListener('click', closeGeo);
+if ($('#geoScrim')) $('#geoScrim').addEventListener('click', closeGeo);
 
 /* ============================================================
    ICONS + INITIAL CART LOAD

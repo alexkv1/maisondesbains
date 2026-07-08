@@ -15,4 +15,6 @@ return [
 
     'stripe-key'            => '',   // sk_test_...
     'stripe-webhook-secret' => '',   // whsec_...
+
+    'sek-rate'              => 11.3, // EUR -> SEK display rate
 ];

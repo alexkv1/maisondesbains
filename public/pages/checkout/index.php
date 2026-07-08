@@ -38,7 +38,7 @@ require $root . '/utils/layout/header.php';
       </div>
       <div class="field"><label for="co-country">Country</label><input id="co-country" name="country" value="France" /></div>
 
-      <label class="giftline"><input type="checkbox" id="co-gift" name="gift_wrap" /> <span>Gift wrap in unmarked paper (+€4)</span></label>
+      <label class="giftline"><input type="checkbox" id="co-gift" name="gift_wrap" /> <span>Gift wrap in unmarked paper (+<?= money(currencies()[currentCurrency()]['gift_wrap']) ?>)</span></label>
 
       <button type="submit" class="btn btn--primary btn--lg btn--full" id="placeOrder">Place order</button>
       <p class="checkout__err" id="checkoutErr" aria-live="polite"></p>
@@ -48,10 +48,10 @@ require $root . '/utils/layout/header.php';
     <aside class="checkout__summary" id="coSummary">
       <span class="eyebrow">Your order</span>
       <div class="checkout__lines" id="coLines"></div>
-      <div class="summary__row"><span>Subtotal</span><span class="mono" id="coSubtotal">€0.00</span></div>
+      <div class="summary__row"><span>Subtotal</span><span class="mono" id="coSubtotal"><?= money(0) ?></span></div>
       <div class="summary__row"><span>Delivery</span><span class="mono" id="coShipping">—</span></div>
-      <div class="summary__row" id="coGiftRow" hidden><span>Gift wrap</span><span class="mono" id="coGift">€4.00</span></div>
-      <div class="summary__row summary__row--total"><span>Total</span><span class="mono" id="coTotal">€0.00</span></div>
+      <div class="summary__row" id="coGiftRow" hidden><span>Gift wrap</span><span class="mono" id="coGift"><?= money(currencies()[currentCurrency()]['gift_wrap']) ?></span></div>
+      <div class="summary__row summary__row--total"><span>Total</span><span class="mono" id="coTotal"><?= money(0) ?></span></div>
     </aside>
   </div>
 </main>

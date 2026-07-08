@@ -10,7 +10,7 @@ $products = $db->select("SELECT * FROM `products` WHERE `status` = 1 ORDER BY `i
 $SEARCH_PRODUCTS = array_map(function ($p) {
     return [
         'id' => $p['identifier'], 'name' => $p['name'], 'brand' => $p['brand'],
-        'line' => $p['line'], 'notes' => $p['notes'], 'price' => money((int)$p['price_cents']),
+        'line' => $p['line'], 'notes' => $p['notes'], 'price' => money(productPrice($p)),
     ];
 }, $products);
 
