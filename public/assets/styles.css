@@ -155,7 +155,7 @@ em { font-style: italic; }
    CATEGORY STRIP
    ============================================================ */
 .catstrip {
-  display: grid; grid-template-columns: repeat(4, 1fr);
+  display: grid; grid-template-columns: repeat(3, 1fr);
   border-bottom: 1px solid var(--border-hairline);
 }
 .catstrip__item {
@@ -433,9 +433,7 @@ em { font-style: italic; }
   .nav__links { display: none; }
   .wordmark { justify-self: start; font-size: 15px; letter-spacing: 0.24em; word-spacing: 0.3em; }
   .announce span:nth-child(2) { display: none; }
-  .catstrip { grid-template-columns: repeat(2, 1fr); }
-  .catstrip__item:nth-child(2) { border-right: none; }
-  .catstrip__item:nth-child(-n+2) { border-bottom: 1px solid var(--border-hairline); }
+  .catstrip__item { padding: var(--space-5) var(--space-4); }
   .edit { grid-template-columns: 1fr; }
   .edit__plate { min-height: 52vh; border-right: none; border-bottom: 1px solid var(--border-hairline); }
   .footer__grid { grid-template-columns: 1fr 1fr; gap: var(--space-6); }

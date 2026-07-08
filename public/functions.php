@@ -39,9 +39,9 @@ function respond(array $payload, int $status = 200): void {
     exit;
 }
 
-/** Format integer pence as £X.XX. */
+/** Format integer pence as €X.XX. */
 function money(int $pence): string {
-    return '£' . number_format($pence / 100, 2);
+    return '€' . number_format($pence / 100, 2);
 }
 
 /** True if the request method matches, else 405. */

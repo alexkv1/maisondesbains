@@ -22,7 +22,7 @@ $SEARCH_PRODUCTS = $SEARCH_PRODUCTS ?? [];
     </div>
     <div class="footer__col">
       <h4>Shop</h4>
-      <a href="/#collection" data-cat="Soap">Soap</a><a href="/#collection" data-cat="Bath">Bath</a><a href="/#collection" data-cat="Body">Body</a><a href="/#collection" data-cat="Home">Home</a>
+      <a href="/#collection" data-cat="Soap">Soap</a><a href="/#collection" data-cat="Wash">Wash</a><a href="/#collection" data-cat="Body">Body</a><a href="/#collection">Le Labo</a><a href="/#collection">Byredo</a>
     </div>
     <div class="footer__col">
       <h4>Service</h4>
@@ -50,9 +50,9 @@ $SEARCH_PRODUCTS = $SEARCH_PRODUCTS ?? [];
     </div>
     <div class="drawer__row">
       <span>Subtotal</span>
-      <span id="drawerTotal" class="mono">£0.00</span>
+      <span id="drawerTotal" class="mono">€0.00</span>
     </div>
-    <p class="drawer__ship">Complimentary delivery over £75. Taxes calculated at checkout.</p>
+    <p class="drawer__ship">Complimentary delivery over €75. Taxes calculated at checkout.</p>
     <a class="btn btn--primary btn--full" href="/checkout" id="checkoutBtn">Proceed to checkout</a>
   </div>
 </aside>

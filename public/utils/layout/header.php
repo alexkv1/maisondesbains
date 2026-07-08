@@ -5,7 +5,7 @@
  * (include utils/Auth/Verify.php first) to reflect sign-in state.
  */
 $PAGE_TITLE = $PAGE_TITLE ?? 'Maison Des Bains — The Bath, Curated';
-$PAGE_DESC  = $PAGE_DESC ?? 'A monochrome house that keeps the ritual of water. Le Labo, Byredo, Diptyque, Dior.';
+$PAGE_DESC  = $PAGE_DESC ?? 'A monochrome house that keeps the ritual of water. Le Labo and Byredo.';
 $signedIn   = isset($AUTH) && $AUTH->valid;
 ?><!DOCTYPE html>
 <html lang="en">
@@ -20,7 +20,7 @@ $signedIn   = isset($AUTH) && $AUTH->valid;
 <body>
 
 <div class="announce">
-  <span>Complimentary delivery over £75</span>
+  <span>Complimentary delivery over €75</span>
   <span>Paris · London · New York</span>
   <span>The Bath, Curated</span>
 </div>
@@ -29,9 +29,8 @@ $signedIn   = isset($AUTH) && $AUTH->valid;
   <nav class="nav">
     <ul class="nav__links">
       <li><a href="/#collection" data-cat="Soap">Soap</a></li>
-      <li><a href="/#collection" data-cat="Bath">Bath</a></li>
+      <li><a href="/#collection" data-cat="Wash">Wash</a></li>
       <li><a href="/#collection" data-cat="Body">Body</a></li>
-      <li><a href="/#collection" data-cat="Home">Home</a></li>
       <li><a href="/#journal">The Journal</a></li>
     </ul>
     <a href="/" class="wordmark" aria-label="Maison Des Bains — home">Maison Des Bains</a>

@@ -25,7 +25,7 @@ require __DIR__ . '/utils/layout/header.php';
     <div class="hero__inner">
       <p class="eyebrow reveal">The Bath, Curated</p>
       <h1 class="hero__title reveal" data-delay="1">We don't sell soap.<br />We keep the <em>ritual</em> of water.</h1>
-      <p class="hero__lede reveal" data-delay="2">A house that edits, rather than shouts — the finest soaps and bath objects of Le&nbsp;Labo, Byredo, Diptyque and Dior, chosen for how they hold a room.</p>
+      <p class="hero__lede reveal" data-delay="2">A house that edits, rather than shouts — the washes, lotions and soaps of Le&nbsp;Labo and Byredo, chosen for how they hold a room.</p>
       <div class="hero__actions reveal" data-delay="3">
         <a href="#collection" class="btn btn--primary">Shop the Maison</a>
         <a href="#edit" class="btn btn--ghost">The Grey Bath →</a>
@@ -35,9 +35,8 @@ require __DIR__ . '/utils/layout/header.php';
 
   <section class="catstrip" aria-label="Categories">
     <a href="#collection" class="catstrip__item" data-cat="Soap"><span class="num">01</span><span class="cat">Soap</span></a>
-    <a href="#collection" class="catstrip__item" data-cat="Bath"><span class="num">02</span><span class="cat">Bath</span></a>
+    <a href="#collection" class="catstrip__item" data-cat="Wash"><span class="num">02</span><span class="cat">Wash</span></a>
     <a href="#collection" class="catstrip__item" data-cat="Body"><span class="num">03</span><span class="cat">Body</span></a>
-    <a href="#collection" class="catstrip__item" data-cat="Home"><span class="num">04</span><span class="cat">Home</span></a>
   </section>
 
   <section class="collection" id="collection">

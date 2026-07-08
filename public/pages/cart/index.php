@@ -13,10 +13,10 @@ require $root . '/utils/layout/header.php';
   <div class="cartpage__grid" id="cartPage" data-empty="The basket is empty.">
     <div class="cartpage__lines" id="cartLines"></div>
     <aside class="cartpage__summary" id="cartSummary">
-      <div class="summary__row"><span>Subtotal</span><span class="mono" id="sumSubtotal">£0.00</span></div>
+      <div class="summary__row"><span>Subtotal</span><span class="mono" id="sumSubtotal">€0.00</span></div>
       <div class="summary__row"><span>Delivery</span><span class="mono" id="sumShipping">—</span></div>
-      <div class="summary__row summary__row--total"><span>Total</span><span class="mono" id="sumTotal">£0.00</span></div>
-      <p class="drawer__ship">Complimentary delivery over £75. Taxes at checkout.</p>
+      <div class="summary__row summary__row--total"><span>Total</span><span class="mono" id="sumTotal">€0.00</span></div>
+      <p class="drawer__ship">Complimentary delivery over €75. Taxes at checkout.</p>
       <a class="btn btn--primary btn--full" href="/checkout" id="cartCheckout">Proceed to checkout</a>
       <a class="btn btn--ghost btn--full" href="/#collection">Continue shopping</a>
     </aside>

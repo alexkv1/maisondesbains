@@ -18,12 +18,12 @@ async function api(path, opts = {}) {
   return { ok: res.ok, status: res.status, data };
 }
 const post = (path, body) => api(path, { method: 'POST', body: JSON.stringify(body || {}) });
-const gbp = c => '£' + (c / 100).toFixed(2);
+const gbp = c => '€' + (c / 100).toFixed(2);
 
 /* ============================================================
    FILTERS (home)
    ============================================================ */
-const CATS = ['All', 'Soap', 'Bath', 'Body', 'Home'];
+const CATS = ['All', 'Soap', 'Wash', 'Body'];
 const filtersEl = $('#filters');
 if (filtersEl) {
   filtersEl.innerHTML = CATS.map((c, i) =>

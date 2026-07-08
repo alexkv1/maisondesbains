@@ -122,14 +122,12 @@ CREATE TABLE IF NOT EXISTS `order_items` (
 INSERT INTO `products`
   (`identifier`, `brand`, `name`, `line`, `category`, `price_cents`, `sku`, `notes`, `blurb`, `badge`, `sold_out`, `date_created`)
 VALUES
-  ('santal-33',   'Le Labo',  'Santal 33',     'Bar Soap',      'Soap', 3800, 'MDB·04—217', 'Sandalwood · Cardamom · Leather', 'A cult sandalwood, pressed into a triple-milled bar. Warm, smoky, quietly addictive.', NULL,      0, UNIX_TIMESTAMP()),
-  ('rose-noir',   'Byredo',   'Rose Noir',     'Hand Wash',     'Body', 4500, 'MDB·04—331', 'Black Rose · Freesia · Musk',     'A darkened rose for the basin — sharp at first, then soft as dusk.',                    NULL,      0, UNIX_TIMESTAMP()),
-  ('bain-moussant','Diptyque','Bain Moussant', 'Bubble Bath',   'Bath', 5200, 'MDB·05—118', 'Fig Leaf · Cedar · Green Sap',    'A foaming fig bath drawn from a Mediterranean garden after rain.',                      NULL,      1, UNIX_TIMESTAMP()),
-  ('blanc-de-peau','Dior',    'Blanc de Peau', 'Cleansing Bar', 'Soap', 4000, 'MDB·04—402', 'White Iris · Rice · Cotton',      'A powder-soft white bar. Skin left matte, clean, unscented at the finish.',             'New',     0, UNIX_TIMESTAMP()),
-  ('mojave-ghost','Byredo',   'Mojave Ghost',  'Body Lotion',   'Body', 5800, 'MDB·06—077', 'Sandalwood · Violet · Amber',     'A desert flower that blooms against all odds — powdery, resinous, resolute.',           NULL,      0, UNIX_TIMESTAMP()),
-  ('the-noir-29', 'Le Labo',  'Thé Noir 29',   'Bath Salts',    'Bath', 6200, 'MDB·05—244', 'Black Tea · Fig · Bay Leaves',    'Coarse grey salts steeped in black tea. For the long, slow soak.',                      NULL,      0, UNIX_TIMESTAMP()),
-  ('baies-candle','Diptyque', 'Baies Candle',  'Home',          'Home', 6800, 'MDB·07—012', 'Blackcurrant · Bulgarian Rose',   'The house classic. Berries and rose, for the room the bath opens onto.',                'Limited', 0, UNIX_TIMESTAMP()),
-  ('gris-poudre', 'Dior',     'Gris Poudré',   'Body Oil',      'Body', 7200, 'MDB·06—190', 'Grey Iris · Musk · Vanilla',      'A weightless grey oil that disappears into damp skin.',                                 NULL,      0, UNIX_TIMESTAMP())
+  ('santal-33-shower-gel',    'Le Labo', 'Santal 33 Shower Gel',    '90 ml',  'Wash', 2000, 'MDB·LL—901', 'Sandalwood · Cardamom · Iris · Leather', 'The cult Santal 33, drawn into a lathering shower gel. Smoky sandalwood and iris, left on warm skin.',        NULL, 0, UNIX_TIMESTAMP()),
+  ('santal-33-body-lotion',   'Le Labo', 'Santal 33 Body Lotion',   '90 ml',  'Body', 2000, 'MDB·LL—902', 'Sandalwood · Violet · Cardamom · Amber', 'A weightless lotion carrying Santal 33''s smoky sandalwood and violet. Sinks in, lingers for hours.',        NULL, 0, UNIX_TIMESTAMP()),
+  ('bal-dafrique-shower-gel', 'Byredo',  'Bal d''Afrique Shower Gel','50 ml',  'Wash', 1500, 'MDB·BY—501', 'Bergamot · Neroli · Marigold · Vetiver', 'Byredo''s Bal d''Afrique as a travel shower gel — African marigold, neroli and warm vetiver.',               NULL, 0, UNIX_TIMESTAMP()),
+  ('bal-dafrique-body-lotion','Byredo',  'Bal d''Afrique Body Lotion','50 ml', 'Body', 1500, 'MDB·BY—502', 'Bergamot · Violet · Vetiver · Musk',     'A supple body lotion of bergamot, violet and vetiver. The 1920s Paris–Africa reverie, worn on skin.',        NULL, 0, UNIX_TIMESTAMP()),
+  ('bal-dafrique-soap',       'Byredo',  'Bal d''Afrique Soap',      '30 g',   'Soap',  800, 'MDB·BY—030', 'Bergamot · Neroli · Black Amber',        'A petite milled soap of Bal d''Afrique — bergamot and black amber, kept by the basin.',                       NULL, 0, UNIX_TIMESTAMP()),
+  ('bal-dafrique-hand-wash',  'Byredo',  'Bal d''Afrique Hand Wash', '450 ml', 'Wash', 3900, 'MDB·BY—450', 'Bergamot · Neroli · Vetiver · Amber',    'A generous hand wash of Bal d''Afrique. Neroli and vetiver, left on the hands like a signature.',            NULL, 0, UNIX_TIMESTAMP())
 ON DUPLICATE KEY UPDATE
   `brand`=VALUES(`brand`), `name`=VALUES(`name`), `line`=VALUES(`line`), `category`=VALUES(`category`),
   `price_cents`=VALUES(`price_cents`), `sku`=VALUES(`sku`), `notes`=VALUES(`notes`), `blurb`=VALUES(`blurb`),
