@@ -50,11 +50,24 @@ CREATE TABLE IF NOT EXISTS `users` (
   `last_name`     VARCHAR(80)  NOT NULL DEFAULT '',
   `phone`           VARCHAR(40)  NOT NULL DEFAULT '',
   `points`          INT UNSIGNED NOT NULL DEFAULT 0,
-  `pending_welcome` VARCHAR(16)  NOT NULL DEFAULT '',  -- tier key of an unclaimed welcome gift
   `status`          TINYINT(1)   NOT NULL DEFAULT 1,
   `date_created`  INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------- user_gifts (discrete free gifts owed to a member) ----------
+CREATE TABLE IF NOT EXISTS `user_gifts` (
+  `id`            INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user`          INT UNSIGNED NOT NULL,
+  `variant`       INT UNSIGNED NOT NULL,
+  `label`         VARCHAR(80)  NOT NULL DEFAULT 'A gift, with our compliments',
+  `status`        VARCHAR(16)  NOT NULL DEFAULT 'available',  -- available | claimed | redeemed
+  `date_created`  INT UNSIGNED NOT NULL DEFAULT 0,
+  `date_redeemed` INT UNSIGNED DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user` (`user`),
+  KEY `status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ---------- sessions ----------

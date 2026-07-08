@@ -7,11 +7,30 @@
 require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../functions.php';
 
-/** Welcome-gift variants to include for this shopper (pending + claimed). */
-function claimedWelcomeVariants($AUTH): array {
-    if (empty($AUTH->valid) || empty($AUTH->pending_welcome)) return [];
-    if (($_COOKIE['WELCOME_CLAIMED'] ?? '') !== '1') return [];
-    return welcomeGiftVariants($AUTH->pending_welcome);
+/** Grant a tier's welcome gift(s) to a user as available user_gifts rows. */
+function grantWelcomeGifts(DB $db, int $userId, string $tierKey): void {
+    $label = ucfirst($tierKey) . ' welcome gift';
+    foreach (welcomeGiftVariants($tierKey) as $vid) {
+        $r = $db->select("SELECT id FROM `product_variants` WHERE `identifier` = ? LIMIT 1", [$vid], 's');
+        if ($r) {
+            $db->execute(
+                "INSERT INTO `user_gifts` (`user`, `variant`, `label`, `status`, `date_created`) VALUES (?, ?, ?, 'available', ?)",
+                [$userId, (int)$r[0]['id'], $label, time()], 'iisi'
+            );
+        }
+    }
+}
+
+/** A member's claimed gifts, as [{identifier, label}] to add free to the cart. */
+function claimedGifts(DB $db, ?int $userId): array {
+    if (!$userId) return [];
+    $rows = $db->select(
+        "SELECT g.id, g.label, v.identifier
+           FROM `user_gifts` g JOIN `product_variants` v ON v.id = g.variant
+          WHERE g.`user` = ? AND g.`status` = 'claimed'",
+        [$userId], 'i'
+    );
+    return $rows ?: [];
 }
 
 /** Return the current cart id, creating a cart + cookie if needed. */
@@ -115,7 +134,7 @@ function setCartCookie(string $token): void {
 }
 
 /** Full cart contents + totals, computed in the visitor's active currency. */
-function cartSummary(DB $db, int $cartId, bool $giftWrap = false, ?string $tierKey = null, array $welcomeVariants = []): array {
+function cartSummary(DB $db, int $cartId, bool $giftWrap = false, ?string $tierKey = null, array $extraGifts = []): array {
     $currency = currentCurrency();
     $cfg = currencies()[$currency];
     $benefits = tierBenefits($tierKey);
@@ -182,14 +201,14 @@ function cartSummary(DB $db, int $cartId, bool $giftWrap = false, ?string $tierK
         }
     }
 
-    // Welcome gifts (revealed) granted on reaching a tier, once claimed.
-    foreach ($welcomeVariants as $wv) {
+    // Claimed account gifts (welcome gifts, support gifts) — revealed, free.
+    foreach ($extraGifts as $eg) {
         if ($count === 0) break;
         $w = $db->select(
             "SELECT v.id AS variant_id, v.identifier, v.size, v.sku, p.brand, p.name, p.image, p.identifier AS product_identifier
                FROM `product_variants` v JOIN `products` p ON p.id = v.product
               WHERE v.identifier = ? LIMIT 1",
-            [$wv], 's'
+            [$eg['identifier']], 's'
         );
         if ($w) {
             $wi = $w[0];
@@ -199,7 +218,7 @@ function cartSummary(DB $db, int $cartId, bool $giftWrap = false, ?string $tierK
                 'size' => $wi['size'], 'sku' => $wi['sku'], 'image' => $wi['image'],
                 'quantity' => 1, 'unit_price' => 0, 'line_total' => 0, 'sold_out' => 0,
                 'initial' => mb_substr($wi['name'], 0, 1),
-                'is_gift' => true, 'is_masked' => false, 'gift_label' => 'Welcome gift',
+                'is_gift' => true, 'is_masked' => false, 'gift_label' => $eg['label'] ?: 'Gift',
             ];
         }
     }

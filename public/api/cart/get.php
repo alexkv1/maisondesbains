@@ -9,7 +9,7 @@ $giftWrap = !empty($_GET['gift_wrap']);
 
 $cartId = resolveCart($db, $userId);
 $tierKey = $AUTH->valid ? $AUTH->tier['key'] : null;
-$summary = cartSummary($db, $cartId, $giftWrap, $tierKey, claimedWelcomeVariants($AUTH));
+$summary = cartSummary($db, $cartId, $giftWrap, $tierKey, claimedGifts($db, $AUTH->valid ? $AUTH->user : null));
 
 respond([
     'success' => true,

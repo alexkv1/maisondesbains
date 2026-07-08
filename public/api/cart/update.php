@@ -33,4 +33,4 @@ if ($qty <= 0) {
     );
 }
 
-respond(['success' => true, 'cart' => cartSummary($db, $cartId, false, $AUTH->valid ? $AUTH->tier['key'] : null, claimedWelcomeVariants($AUTH))]);
+respond(['success' => true, 'cart' => cartSummary($db, $cartId, false, $AUTH->valid ? $AUTH->tier['key'] : null, claimedGifts($db, $AUTH->valid ? $AUTH->user : null))]);

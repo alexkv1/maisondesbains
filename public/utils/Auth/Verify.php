@@ -50,7 +50,6 @@ function verifyAuth(DB $db): stdClass {
     $auth->phone = $user['phone'];
     $auth->points = (int)($user['points'] ?? 0);
     $auth->tier = tierForPoints($auth->points);
-    $auth->pending_welcome = $user['pending_welcome'] ?? '';
     $auth->valid = true;
 
     return $auth;

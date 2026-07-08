@@ -2,6 +2,7 @@
 $root = dirname(__DIR__, 2);
 require_once $root . '/db.php';
 require_once $root . '/functions.php';
+require_once $root . '/utils/render.php';
 require_once $root . '/utils/Auth/Verify.php';
 
 // Guests are sent to sign in.
@@ -9,6 +10,17 @@ if (!$AUTH->valid) {
     header('Location: /login?redirect=/account');
     exit;
 }
+
+// Gifts available to (or claimed for) this member.
+$gifts = $db->select(
+    "SELECT g.id, g.label, g.status, p.name, v.size, p.image
+       FROM `user_gifts` g
+       JOIN `product_variants` v ON v.id = g.variant
+       JOIN `products` p ON p.id = v.product
+      WHERE g.`user` = ? AND g.`status` IN ('available','claimed')
+      ORDER BY g.id DESC",
+    [$AUTH->user], 'i'
+) ?: [];
 
 // Order history, rendered server-side.
 $orders = $db->select(
@@ -89,6 +101,34 @@ require $root . '/utils/layout/header.php';
         <?php endforeach; ?>
       </div>
     </details>
+  </section>
+
+  <section class="gifts">
+    <span class="eyebrow">Your gifts</span>
+    <?php if (!$gifts): ?>
+      <p class="account__empty">No gifts waiting just now. Reach the next tier — or a kindness from us — and they'll appear here.</p>
+    <?php else: ?>
+      <div class="gifts__grid">
+        <?php foreach ($gifts as $g): $claimed = $g['status'] === 'claimed'; ?>
+        <div class="giftcard<?= $claimed ? ' is-claimed' : '' ?>">
+          <div class="giftcard__plate">
+            <?php if (!empty($g['image'])): ?><img src="<?= e($g['image']) ?>" alt="<?= e($g['name']) ?>" />
+            <?php else: ?><span aria-hidden="true"><?= e(mb_substr($g['name'], 0, 1)) ?></span><?php endif; ?>
+          </div>
+          <div class="giftcard__body">
+            <span class="giftcard__label"><?= e($g['label']) ?></span>
+            <span class="giftcard__name"><?= e($g['name']) ?> <span class="mono">(<?= e($g['size']) ?>)</span></span>
+            <?php if ($claimed): ?>
+              <span class="giftcard__status">Added to your bag</span>
+            <?php else: ?>
+              <button class="btn btn--secondary" data-claim-gift="<?= (int)$g['id'] ?>">Claim</button>
+            <?php endif; ?>
+          </div>
+        </div>
+        <?php endforeach; ?>
+      </div>
+      <p class="gifts__note mono">Claimed gifts are added free to your next order.</p>
+    <?php endif; ?>
   </section>
 
   <section class="account__orders">

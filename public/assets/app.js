@@ -442,23 +442,15 @@ if ($('#giftScrim')) $('#giftScrim').addEventListener('click', () => { setCookie
 /* Claim from the in-cart nudge link */
 document.addEventListener('click', e => { if (e.target.closest('#nudgeClaim')) { e.preventDefault(); claimGift(); } });
 
-/* ---- Tier welcome-gift modal ---- */
-const welcomeModal = $('#welcomeModal');
-function closeWelcome() { if (!welcomeModal) return; welcomeModal.classList.remove('is-open'); welcomeModal.setAttribute('aria-hidden', 'true'); }
-function claimWelcome() {
-  setCookie('WELCOME_CLAIMED', '1', 30);
-  setCookie('WELCOME_SEEN', '1', 1);
-  closeWelcome();
-  refreshCart().then(() => openDrawer());
-}
-if (welcomeModal && window.MDB_HAS_WELCOME && !getCookie('WELCOME_SEEN') && !getCookie('WELCOME_CLAIMED')) {
-  setCookie('WELCOME_SEEN', '1', 1);
-  welcomeModal.classList.add('is-open');
-  welcomeModal.setAttribute('aria-hidden', 'false');
-}
-if ($('#welcomeClaim')) $('#welcomeClaim').addEventListener('click', claimWelcome);
-if ($('#welcomeDismiss')) $('#welcomeDismiss').addEventListener('click', () => { setCookie('WELCOME_SEEN', '1', 1); closeWelcome(); });
-if ($('#welcomeScrim')) $('#welcomeScrim').addEventListener('click', () => { setCookie('WELCOME_SEEN', '1', 1); closeWelcome(); });
+/* ---- Claim an account gift (welcome / support) into the bag ---- */
+document.addEventListener('click', async e => {
+  const btn = e.target.closest('[data-claim-gift]');
+  if (!btn) return;
+  btn.disabled = true; btn.textContent = 'Claiming…';
+  const { data } = await post('/api/account/claim-gift', { gift_id: btn.dataset.claimGift });
+  if (data.success) window.location.reload();
+  else { btn.disabled = false; btn.textContent = 'Claim'; }
+});
 
 /* ============================================================
    ICONS + INITIAL CART LOAD
