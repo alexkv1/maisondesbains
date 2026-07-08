@@ -3,6 +3,11 @@
  * DB — thin mysqli wrapper with prepared statements.
  * Mirrors the yuz DB class. Reads credentials from conf.php.
  */
+
+// Return false on SQL errors (as the methods below expect) rather than
+// throwing — a bad query degrades gracefully instead of a hard 500.
+mysqli_report(MYSQLI_REPORT_OFF);
+
 class DB {
     private $conn;
 

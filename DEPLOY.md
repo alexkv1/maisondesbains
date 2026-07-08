@@ -56,6 +56,21 @@ At **Settings → Secrets and variables → Actions**, set:
 git push origin main      # or re-run the workflow from the Actions tab
 ```
 
+## Schema changes (IMPORTANT)
+
+`schema.sql` uses `CREATE TABLE IF NOT EXISTS`, which will **not** add new
+columns to an existing table. So whenever `schema.sql` changes (new column,
+prices, stock, products, images), rebuild the catalogue/cart/order tables on
+the VM after the deploy. This is safe at this stage — `users` and `sessions`
+(accounts) are preserved; only test catalogue/cart/order data is rebuilt:
+
+```bash
+mysql maison_des_bains -e "DROP TABLE IF EXISTS cart_items, order_items, product_variants, products, carts, orders;"
+mysql maison_des_bains < /var/www/html/schema.sql
+```
+
+PHP/CSS/JS/image-only changes need no SQL — they go live when the Action finishes.
+
 ## Payments
 
 - **No `STRIPE_KEY`** → the built-in **mock checkout** places the order, marks it
