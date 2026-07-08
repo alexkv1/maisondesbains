@@ -253,7 +253,14 @@ if (checkoutForm) {
     if (data.success && data.url) {
       window.location.href = data.url;
     } else {
-      err.textContent = data.message || 'Something went wrong. Please try again.';
+      if (data.stock_issues && data.stock_issues.length) {
+        err.innerHTML = data.message + '<br>' + data.stock_issues.map(i =>
+          `· ${i.name} (${i.size}) — ${i.reason === 'qty' ? 'only ' + i.available + ' available' : 'no longer available'}`
+        ).join('<br>') + '<br><a href="/cart">Return to the bag to adjust</a>';
+        refreshCart();
+      } else {
+        err.textContent = data.message || 'Something went wrong. Please try again.';
+      }
       btn.disabled = false; btn.textContent = 'Place order';
     }
   });

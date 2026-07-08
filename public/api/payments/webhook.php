@@ -6,6 +6,7 @@
  */
 require_once __DIR__ . '/../../db.php';
 require_once __DIR__ . '/../../functions.php';
+require_once __DIR__ . '/../../utils/cart.php';
 
 $cfg = config();
 $secret = $cfg['stripe-webhook-secret'] ?? '';
@@ -52,11 +53,16 @@ if (!$rows) {
 }
 $orderId = (int)$rows[0]['id'];
 
+$wasPaid = $db->select("SELECT `status` FROM `orders` WHERE `id` = ?", [$orderId], 'i');
 $db->execute(
     "UPDATE `orders` SET `status` = 'paid', `date_paid` = ? WHERE `id` = ? AND `status` <> 'paid'",
     [time(), $orderId],
     'ii'
 );
+// Decrement stock once, on the transition to paid.
+if ($wasPaid && $wasPaid[0]['status'] !== 'paid') {
+    decrementStockForOrder($db, $orderId);
+}
 
 // Empty the cart belonging to the order's user, if any.
 $userRows = $db->select("SELECT `user` FROM `orders` WHERE `id` = ?", [$orderId], 'i');

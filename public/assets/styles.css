@@ -551,6 +551,11 @@ em { font-style: italic; }
    CHECKOUT PAGE
    ============================================================ */
 .checkout__signin { color: var(--text-secondary); margin-bottom: var(--space-6); }
+.stock-alert { border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: var(--space-5); margin-bottom: var(--space-6); }
+.stock-alert__lead { font-family: var(--font-grotesk); font-weight: var(--weight-medium); font-size: var(--size-micro); letter-spacing: var(--tracking-wider); text-transform: uppercase; margin-bottom: var(--space-3); }
+.stock-alert ul { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: var(--space-4); }
+.stock-alert li { font-size: var(--size-small); color: var(--text-secondary); }
+.stock-alert li .mono { color: var(--text-muted); }
 .checkout__signin a { text-decoration: underline; text-underline-offset: 0.25em; }
 .checkout__grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: clamp(2rem, 5vw, 4rem); align-items: start; margin-top: var(--space-6); }
 .giftline { display: flex; align-items: center; gap: 0.7rem; font-size: var(--size-small); color: var(--text-secondary); margin: var(--space-4) 0 var(--space-6); cursor: pointer; }

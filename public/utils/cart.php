@@ -51,6 +51,49 @@ function resolveCart(DB $db, ?int $userId = null): int {
     return (int)$db->lastInsertId();
 }
 
+/**
+ * Verify each cart item against current stock. Returns a list of issues:
+ * [{identifier, name, size, available, reason}] where reason is
+ * 'out' (0 available / sold out), 'qty' (fewer than requested) or
+ * 'unavailable' (variant gone). Empty array = everything is in stock.
+ */
+function checkStock(DB $db, array $items): array {
+    $issues = [];
+    foreach ($items as $it) {
+        if (!empty($it['is_gift'])) continue;   // the free gift isn't a purchase
+        $rows = $db->select(
+            "SELECT `stock`, `sold_out` FROM `product_variants` WHERE `identifier` = ? LIMIT 1",
+            [$it['identifier']], 's'
+        );
+        if (!$rows) {
+            $issues[] = ['identifier' => $it['identifier'], 'name' => $it['name'], 'size' => $it['size'], 'available' => 0, 'reason' => 'unavailable'];
+            continue;
+        }
+        $stock = (int) $rows[0]['stock'];
+        $soldOut = (int) $rows[0]['sold_out'] === 1;
+        if ($soldOut || $stock <= 0) {
+            $issues[] = ['identifier' => $it['identifier'], 'name' => $it['name'], 'size' => $it['size'], 'available' => 0, 'reason' => 'out'];
+        } elseif ((int) $it['quantity'] > $stock) {
+            $issues[] = ['identifier' => $it['identifier'], 'name' => $it['name'], 'size' => $it['size'], 'available' => $stock, 'reason' => 'qty'];
+        }
+    }
+    return $issues;
+}
+
+/** Reduce variant stock for a paid order's line items (never below 0). */
+function decrementStockForOrder(DB $db, int $orderId): void {
+    $items = $db->select(
+        "SELECT `variant`, `quantity` FROM `order_items` WHERE `order` = ? AND `variant` IS NOT NULL",
+        [$orderId], 'i'
+    );
+    foreach ($items ?: [] as $it) {
+        $db->execute(
+            "UPDATE `product_variants` SET `stock` = GREATEST(`stock` - ?, 0) WHERE `id` = ?",
+            [(int) $it['quantity'], (int) $it['variant']], 'ii'
+        );
+    }
+}
+
 function setCartCookie(string $token): void {
     if (($_COOKIE['CART'] ?? null) === $token) {
         return;

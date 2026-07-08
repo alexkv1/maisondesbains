@@ -34,11 +34,15 @@ if ($summary['count'] === 0) {
     respond(['success' => false, 'message' => 'Your bag is empty.'], 400);
 }
 
-// Guard against sold-out items slipping through.
-foreach ($summary['items'] as $it) {
-    if ((int)$it['sold_out'] === 1) {
-        respond(['success' => false, 'message' => $it['name'] . ' is sold out.'], 409);
-    }
+// Re-check stock right before taking payment.
+$stockIssues = checkStock($db, $summary['items']);
+if ($stockIssues) {
+    respond([
+        'success' => false,
+        'message' => 'Some items are no longer available in the quantity requested. Your bag has been updated — please review before paying.',
+        'stock_issues' => $stockIssues,
+        'cart' => $summary,
+    ], 409);
 }
 
 // ---- Create the order (pending) with an immutable snapshot of the cart ----
@@ -128,6 +132,7 @@ $db->execute(
     [time(), $orderId],
     'ii'
 );
+decrementStockForOrder($db, $orderId);
 // Empty the cart now that the order is placed.
 $db->execute("DELETE FROM `cart_items` WHERE `cart` = ?", [$cartId], 'i');
 

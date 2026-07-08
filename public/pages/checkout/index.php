@@ -2,6 +2,7 @@
 $root = dirname(__DIR__, 2);
 require_once $root . '/db.php';
 require_once $root . '/functions.php';
+require_once $root . '/utils/cart.php';
 require_once $root . '/utils/Auth/Verify.php';
 $PAGE_TITLE = 'Checkout — Maison Des Bains';
 
@@ -10,6 +11,12 @@ $prefill = [
     'first_name' => $AUTH->valid ? $AUTH->first_name : '',
     'last_name'  => $AUTH->valid ? $AUTH->last_name : '',
 ];
+
+// Stock check on load — warn before the shopper fills in details.
+$cartId = resolveCart($db, $AUTH->valid ? $AUTH->user : null);
+$summary = cartSummary($db, $cartId);
+$stockIssues = checkStock($db, $summary['items']);
+
 require $root . '/utils/layout/header.php';
 ?>
 <main class="pagepad checkout">
@@ -18,6 +25,21 @@ require $root . '/utils/layout/header.php';
 
   <?php if (!$AUTH->valid): ?>
   <p class="checkout__signin">Have an account? <a href="/login?redirect=/checkout">Sign in</a> to prefill your details — or continue as a guest below.</p>
+  <?php endif; ?>
+
+  <?php if ($stockIssues): ?>
+  <div class="stock-alert" role="alert">
+    <p class="stock-alert__lead">Some items need attention before you can pay:</p>
+    <ul>
+      <?php foreach ($stockIssues as $iss): ?>
+        <li><?= e($iss['name']) ?> <span class="mono">(<?= e($iss['size']) ?>)</span> —
+          <?= $iss['reason'] === 'qty'
+                ? 'only ' . (int)$iss['available'] . ' available'
+                : 'no longer available' ?></li>
+      <?php endforeach; ?>
+    </ul>
+    <a class="btn btn--secondary" href="/cart">Return to the bag to adjust</a>
+  </div>
   <?php endif; ?>
 
   <div class="checkout__grid">
@@ -40,7 +62,7 @@ require $root . '/utils/layout/header.php';
 
       <label class="giftline"><input type="checkbox" id="co-gift" name="gift_wrap" /> <span>Gift wrap in unmarked paper (+<?= money(currencies()[currentCurrency()]['gift_wrap']) ?>)</span></label>
 
-      <button type="submit" class="btn btn--primary btn--lg btn--full" id="placeOrder">Place order</button>
+      <button type="submit" class="btn btn--primary btn--lg btn--full" id="placeOrder"<?= $stockIssues ? ' disabled' : '' ?>>Place order</button>
       <p class="checkout__err" id="checkoutErr" aria-live="polite"></p>
       <p class="checkout__note mono" id="checkoutMode"></p>
     </form>
