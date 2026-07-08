@@ -7,6 +7,13 @@
 require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../functions.php';
 
+/** Welcome-gift variants to include for this shopper (pending + claimed). */
+function claimedWelcomeVariants($AUTH): array {
+    if (empty($AUTH->valid) || empty($AUTH->pending_welcome)) return [];
+    if (($_COOKIE['WELCOME_CLAIMED'] ?? '') !== '1') return [];
+    return welcomeGiftVariants($AUTH->pending_welcome);
+}
+
 /** Return the current cart id, creating a cart + cookie if needed. */
 function resolveCart(DB $db, ?int $userId = null): int {
     $token = $_COOKIE['CART'] ?? null;
@@ -108,9 +115,10 @@ function setCartCookie(string $token): void {
 }
 
 /** Full cart contents + totals, computed in the visitor's active currency. */
-function cartSummary(DB $db, int $cartId, bool $giftWrap = false): array {
+function cartSummary(DB $db, int $cartId, bool $giftWrap = false, ?string $tierKey = null, array $welcomeVariants = []): array {
     $currency = currentCurrency();
     $cfg = currencies()[$currency];
+    $benefits = tierBenefits($tierKey);
 
     $items = $db->select(
         "SELECT ci.id AS item_id, ci.quantity,
@@ -140,33 +148,71 @@ function cartSummary(DB $db, int $cartId, bool $giftWrap = false): array {
     }
     unset($it);
 
-    // Complimentary gift once the spend threshold is met AND the shopper
-    // has claimed it (via the gift popup).
+    // Complimentary gift: unlocked by spend threshold (claimed via popup),
+    // or automatically for Platinum/Diamond members on every order.
     $giftThreshold = $cfg['gift_threshold'];
-    $giftQualified = ($count > 0 && $subtotal >= $giftThreshold);
-    $giftClaimed   = ($_COOKIE['GIFT_CLAIMED'] ?? '') === '1';
+    $autoGift      = $benefits['auto_gift'];
+    $giftQualified = ($count > 0 && ($subtotal >= $giftThreshold || $autoGift));
+    $giftClaimed   = $autoGift || (($_COOKIE['GIFT_CLAIMED'] ?? '') === '1');
     if ($giftQualified && $giftClaimed) {
         $g = $db->select(
-            "SELECT v.identifier, v.size, v.sku, p.brand, p.name, p.image, p.identifier AS product_identifier
+            "SELECT v.id AS variant_id, v.identifier, v.size, v.sku, p.brand, p.name, p.image, p.identifier AS product_identifier
                FROM `product_variants` v JOIN `products` p ON p.id = v.product
               WHERE v.identifier = ? LIMIT 1",
             [MDB_GIFT_VARIANT], 's'
         );
         if ($g) {
             $gi = $g[0];
+            // Platinum/Diamond auto-gift is a surprise — mask the product.
+            // The spend-threshold claim reveals the soap.
+            $masked = $autoGift;
             $items[] = [
-                'identifier' => $gi['identifier'], 'product_identifier' => $gi['product_identifier'],
-                'brand' => $gi['brand'], 'name' => $gi['name'], 'size' => $gi['size'], 'sku' => $gi['sku'],
-                'image' => $gi['image'], 'quantity' => 1, 'unit_price' => 0, 'line_total' => 0,
-                'sold_out' => 0, 'initial' => mb_substr($gi['name'], 0, 1), 'is_gift' => true,
+                'identifier'         => $gi['identifier'],
+                'product_identifier' => $masked ? null : $gi['product_identifier'],
+                'variant_id'         => (int)$gi['variant_id'],
+                'brand'              => $masked ? 'With our compliments' : $gi['brand'],
+                'name'               => $masked ? 'A complimentary gift' : $gi['name'],
+                'size'               => $masked ? '' : $gi['size'],
+                'sku'                => $gi['sku'],       // real SKU kept for fulfilment
+                'image'              => $masked ? null : $gi['image'],
+                'quantity' => 1, 'unit_price' => 0, 'line_total' => 0, 'sold_out' => 0,
+                'initial'  => $masked ? '✻' : mb_substr($gi['name'], 0, 1),
+                'is_gift'  => true, 'is_masked' => $masked, 'gift_label' => 'Gift',
             ];
         }
     }
 
-    $giftWrapAmt   = ($giftWrap && $count > 0) ? $cfg['gift_wrap'] : 0;
-    $freeThreshold = $cfg['free_threshold'];
-    $shipping      = ($count > 0 && $subtotal < $freeThreshold) ? $cfg['shipping'] : 0;
-    $total         = $subtotal + $shipping + $giftWrapAmt;
+    // Welcome gifts (revealed) granted on reaching a tier, once claimed.
+    foreach ($welcomeVariants as $wv) {
+        if ($count === 0) break;
+        $w = $db->select(
+            "SELECT v.id AS variant_id, v.identifier, v.size, v.sku, p.brand, p.name, p.image, p.identifier AS product_identifier
+               FROM `product_variants` v JOIN `products` p ON p.id = v.product
+              WHERE v.identifier = ? LIMIT 1",
+            [$wv], 's'
+        );
+        if ($w) {
+            $wi = $w[0];
+            $items[] = [
+                'identifier' => $wi['identifier'], 'product_identifier' => $wi['product_identifier'],
+                'variant_id' => (int)$wi['variant_id'], 'brand' => $wi['brand'], 'name' => $wi['name'],
+                'size' => $wi['size'], 'sku' => $wi['sku'], 'image' => $wi['image'],
+                'quantity' => 1, 'unit_price' => 0, 'line_total' => 0, 'sold_out' => 0,
+                'initial' => mb_substr($wi['name'], 0, 1),
+                'is_gift' => true, 'is_masked' => false, 'gift_label' => 'Welcome gift',
+            ];
+        }
+    }
+
+    $giftWrapAmt   = ($giftWrap && $count > 0) ? ($benefits['free_wrap'] ? 0 : $cfg['gift_wrap']) : 0;
+
+    // Delivery: free for everyone over the universal threshold (€75 / 850 kr),
+    // and free for Platinum/Diamond over the member threshold (€50 / 500 kr).
+    $freeThreshold  = $cfg['free_threshold'];
+    $memberFree     = $benefits['free_shipping'] && $subtotal >= $cfg['gift_threshold'];
+    $freeDelivery   = ($subtotal >= $freeThreshold) || $memberFree;
+    $shipping       = ($count > 0 && !$freeDelivery) ? $cfg['shipping'] : 0;
+    $total          = $subtotal + $shipping + $giftWrapAmt;
 
     // Keys keep the *_cents suffix for continuity; values are integers in the
     // active currency's unit (EUR cents or SEK kronor).
@@ -183,5 +229,7 @@ function cartSummary(DB $db, int $cartId, bool $giftWrap = false): array {
         'gift_qualified'   => $giftQualified,
         'gift_claimed'     => $giftQualified && $giftClaimed,
         'gift_remaining'   => max(0, $giftThreshold - $subtotal),
+        'free_wrap'        => $benefits['free_wrap'],
+        'free_shipping'    => $benefits['free_shipping'],
     ];
 }

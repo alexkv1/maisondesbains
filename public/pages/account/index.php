@@ -17,6 +17,20 @@ $orders = $db->select(
     [$AUTH->user], 'i'
 ) ?: [];
 
+// Loyalty tier + progress.
+$tier = $AUTH->tier;
+$points = $AUTH->points;
+$tiers = loyaltyTiers();
+$nextTier = null;
+foreach ($tiers as $t) {
+    if ($t['min'] > $points) { $nextTier = $t; break; }
+}
+$toNext = $nextTier ? ($nextTier['min'] - $points) : 0;
+// Progress within the current tier band.
+$bandMin = $tier['min'];
+$bandMax = $tier['max'] ?? max($points, $bandMin);
+$progress = ($tier['max'] === null) ? 100 : min(100, round((($points - $bandMin) / max(1, ($bandMax - $bandMin))) * 100));
+
 $PAGE_TITLE = 'Your Account — Maison Des Bains';
 require $root . '/utils/layout/header.php';
 ?>
@@ -29,6 +43,53 @@ require $root . '/utils/layout/header.php';
     </div>
     <button class="btn btn--secondary" id="logoutBtn">Sign out</button>
   </div>
+
+  <section class="loyalty">
+    <div class="loyalty__head">
+      <div>
+        <span class="eyebrow">Maison Membership</span>
+        <h2 class="loyalty__tier"><?= e($tier['name']) ?></h2>
+      </div>
+      <div class="loyalty__points">
+        <span class="loyalty__num mono"><?= number_format($points) ?></span>
+        <span class="loyalty__lbl">points</span>
+      </div>
+    </div>
+
+    <div class="loyalty__bar" aria-hidden="true"><span style="width: <?= (int)$progress ?>%"></span></div>
+    <p class="loyalty__next mono">
+      <?php if ($nextTier): ?>
+        <?= number_format($toNext) ?> points to <?= e($nextTier['name']) ?>
+      <?php else: ?>
+        You've reached our highest tier. Thank you.
+      <?php endif; ?>
+    </p>
+
+    <div class="loyalty__benefits">
+      <span class="eyebrow">Your benefits</span>
+      <ul>
+        <?php foreach ($tier['benefits'] as $b): ?>
+          <li><span>—</span> <?= e($b) ?></li>
+        <?php endforeach; ?>
+      </ul>
+    </div>
+
+    <details class="loyalty__all">
+      <summary>All tiers &amp; how points are earned</summary>
+      <p class="loyalty__earn mono">Earn 10 points per €1 · 1 point per 1 kr spent.</p>
+      <div class="loyalty__grid">
+        <?php foreach ($tiers as $t): ?>
+        <div class="loyalty__card<?= $t['key'] === $tier['key'] ? ' is-current' : '' ?>">
+          <span class="loyalty__cardname"><?= e($t['name']) ?></span>
+          <span class="loyalty__cardpts mono"><?= number_format($t['min']) ?><?= $t['max'] !== null ? '–' . number_format($t['max']) : '+' ?></span>
+          <ul>
+            <?php foreach ($t['benefits'] as $b): ?><li><?= e($b) ?></li><?php endforeach; ?>
+          </ul>
+        </div>
+        <?php endforeach; ?>
+      </div>
+    </details>
+  </section>
 
   <section class="account__orders">
     <span class="eyebrow">Order history</span>

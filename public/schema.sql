@@ -48,8 +48,10 @@ CREATE TABLE IF NOT EXISTS `users` (
   `password_hash` VARCHAR(255) NOT NULL,
   `first_name`    VARCHAR(80)  NOT NULL DEFAULT '',
   `last_name`     VARCHAR(80)  NOT NULL DEFAULT '',
-  `phone`         VARCHAR(40)  NOT NULL DEFAULT '',
-  `status`        TINYINT(1)   NOT NULL DEFAULT 1,
+  `phone`           VARCHAR(40)  NOT NULL DEFAULT '',
+  `points`          INT UNSIGNED NOT NULL DEFAULT 0,
+  `pending_welcome` VARCHAR(16)  NOT NULL DEFAULT '',  -- tier key of an unclaimed welcome gift
+  `status`          TINYINT(1)   NOT NULL DEFAULT 1,
   `date_created`  INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)

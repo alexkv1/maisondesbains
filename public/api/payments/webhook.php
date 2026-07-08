@@ -59,18 +59,43 @@ $db->execute(
     [time(), $orderId],
     'ii'
 );
-// Decrement stock once, on the transition to paid.
+// On the transition to paid: decrement stock, award points, clear cart.
 if ($wasPaid && $wasPaid[0]['status'] !== 'paid') {
     decrementStockForOrder($db, $orderId);
-}
 
-// Empty the cart belonging to the order's user, if any.
-$userRows = $db->select("SELECT `user` FROM `orders` WHERE `id` = ?", [$orderId], 'i');
-$user = $userRows[0]['user'] ?? null;
-if ($user !== null) {
-    $cartRows = $db->select("SELECT id FROM `carts` WHERE `user` = ? ORDER BY id DESC LIMIT 1", [(int)$user], 'i');
-    if ($cartRows) {
-        $db->execute("DELETE FROM `cart_items` WHERE `cart` = ?", [(int)$cartRows[0]['id']], 'i');
+    $ord = $db->select("SELECT `user`, `currency`, `total_cents` FROM `orders` WHERE `id` = ?", [$orderId], 'i');
+    $user = $ord[0]['user'] ?? null;
+    if ($user !== null) {
+        $u = $db->select("SELECT `points`, `pending_welcome` FROM `users` WHERE `id` = ?", [(int)$user], 'i');
+        $oldPoints = (int)($u[0]['points'] ?? 0);
+        $oldPending = $u[0]['pending_welcome'] ?? '';
+        $oldTierKey = tierForPoints($oldPoints)['key'];
+        $pts = pointsForOrder((int)$ord[0]['total_cents'], $ord[0]['currency'], $oldTierKey);
+        $newPoints = $oldPoints + $pts;
+        $db->execute("UPDATE `users` SET `points` = ? WHERE `id` = ?", [$newPoints, (int)$user], 'ii');
+
+        // Welcome-gift lifecycle.
+        $newTierKey = tierForPoints($newPoints)['key'];
+        $consumed = false;
+        if ($oldPending !== '') {
+            $wv = welcomeGiftVariants($oldPending);
+            $got = $db->select(
+                "SELECT v.identifier FROM `order_items` oi JOIN `product_variants` v ON v.id = oi.variant WHERE oi.`order` = ?",
+                [$orderId], 'i'
+            );
+            $ids = array_column($got ?: [], 'identifier');
+            $consumed = $wv && count(array_intersect($wv, $ids)) === count($wv);
+        }
+        $newPending = (tierRank($newTierKey) > tierRank($oldTierKey) && tierRank($newTierKey) >= 1)
+            ? $newTierKey : ($consumed ? '' : $oldPending);
+        if ($newPending !== $oldPending) {
+            $db->execute("UPDATE `users` SET `pending_welcome` = ? WHERE `id` = ?", [$newPending, (int)$user], 'si');
+        }
+
+        $cartRows = $db->select("SELECT id FROM `carts` WHERE `user` = ? ORDER BY id DESC LIMIT 1", [(int)$user], 'i');
+        if ($cartRows) {
+            $db->execute("DELETE FROM `cart_items` WHERE `cart` = ?", [(int)$cartRows[0]['id']], 'i');
+        }
     }
 }
 

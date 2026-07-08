@@ -23,4 +23,4 @@ $cartId = resolveCart($db, $userId);
 
 $db->execute("DELETE FROM `cart_items` WHERE `cart` = ? AND `variant` = ?", [$cartId, $variantId], 'ii');
 
-respond(['success' => true, 'cart' => cartSummary($db, $cartId)]);
+respond(['success' => true, 'cart' => cartSummary($db, $cartId, false, $AUTH->valid ? $AUTH->tier['key'] : null, claimedWelcomeVariants($AUTH))]);

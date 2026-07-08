@@ -69,6 +69,65 @@ const MDB_GIFT_VARIANT = 'bal-dafrique-soap-30g';
 /** Maximum quantity of any single item allowed in the cart. */
 const MDB_MAX_PER_ITEM = 10;
 
+/* ============================================================
+   LOYALTY — points & tiers
+   Earn 10 points per € / 1 point per kr on paid orders.
+   ============================================================ */
+function loyaltyTiers(): array {
+    return [
+        ['key' => 'silver',   'name' => 'Silver',   'min' => 0,    'max' => 500,
+         'benefits' => ['Complimentary gift wrapping']],
+        ['key' => 'gold',     'name' => 'Gold',     'min' => 501,  'max' => 2000,
+         'benefits' => ['Complimentary gift wrapping', 'Early access to new arrivals & private editions']],
+        ['key' => 'platinum', 'name' => 'Platinum', 'min' => 2001, 'max' => 5000,
+         'benefits' => ['Complimentary gift wrapping', 'Complimentary delivery over 50 € / 500 kr', 'A complimentary gift with every order', 'Priority dispatch']],
+        ['key' => 'diamond',  'name' => 'Diamond',  'min' => 5001, 'max' => null,
+         'benefits' => ['Complimentary gift wrapping', 'Complimentary delivery over 50 € / 500 kr', 'A complimentary gift with every order', 'Double points on every order', 'Annual full-size gift & private concierge']],
+    ];
+}
+
+/** The tier row for a points balance. */
+function tierForPoints(int $points): array {
+    $tiers = loyaltyTiers();
+    foreach ($tiers as $t) {
+        if ($points >= $t['min'] && ($t['max'] === null || $points <= $t['max'])) {
+            return $t;
+        }
+    }
+    return $tiers[0];
+}
+
+/** Mechanical benefits derived from a tier key. */
+function tierBenefits(?string $key): array {
+    $free_wrap        = in_array($key, ['silver', 'gold', 'platinum', 'diamond'], true);
+    // Free delivery is a Platinum/Diamond perk, over the gift_threshold (€50 / 500 kr).
+    $free_shipping    = in_array($key, ['platinum', 'diamond'], true);
+    $auto_gift        = in_array($key, ['platinum', 'diamond'], true);
+    $points_multiplier = $key === 'diamond' ? 2 : 1;
+    return compact('free_wrap', 'free_shipping', 'auto_gift', 'points_multiplier');
+}
+
+/** Points earned for an order total (in the currency's minor unit). */
+function pointsForOrder(int $amount, string $currency, ?string $tierKey = null): int {
+    // EUR: 10 pts per € (= cents / 10). SEK: 1 pt per kr (= kronor).
+    $base = $currency === 'EUR' ? intdiv($amount, 10) : $amount;
+    return $base * tierBenefits($tierKey)['points_multiplier'];
+}
+
+/** Numeric rank of a tier (0 = silver … 3 = diamond). */
+function tierRank(string $key): int {
+    return ['silver' => 0, 'gold' => 1, 'platinum' => 2, 'diamond' => 3][$key] ?? 0;
+}
+
+/** The welcome-gift variant identifiers granted on reaching a tier. */
+function welcomeGiftVariants(string $tierKey): array {
+    return [
+        'gold'     => ['bal-dafrique-shower-gel-50ml'],
+        'platinum' => ['bal-dafrique-shower-gel-50ml', 'bal-dafrique-body-lotion-50ml'],
+        'diamond'  => ['santal-33-shower-gel-90ml', 'santal-33-body-lotion-90ml'],
+    ][$tierKey] ?? [];
+}
+
 /** The visitor's selected currency (CUR cookie), defaulting to EUR. */
 function currentCurrency(): string {
     $c = strtoupper($_COOKIE['CUR'] ?? 'EUR');

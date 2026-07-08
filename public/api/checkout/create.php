@@ -28,7 +28,10 @@ if ($firstName === '' || $line1 === '' || $city === '' || $postcode === '') {
 }
 
 $cartId = resolveCart($db, $userId);
-$summary = cartSummary($db, $cartId, $giftWrap);
+$tierKey = $AUTH->valid ? $AUTH->tier['key'] : null;
+$oldPending = $AUTH->valid ? $AUTH->pending_welcome : '';
+$welcomeVars = claimedWelcomeVariants($AUTH);
+$summary = cartSummary($db, $cartId, $giftWrap, $tierKey, $welcomeVars);
 
 if ($summary['count'] === 0) {
     respond(['success' => false, 'message' => 'Your bag is empty.'], 400);
@@ -133,6 +136,30 @@ $db->execute(
     'ii'
 );
 decrementStockForOrder($db, $orderId);
+// Award loyalty points + handle welcome-gift lifecycle for members.
+if ($userId) {
+    $oldPoints = (int)$AUTH->points;
+    $pts = pointsForOrder($summary['total_cents'], $currency, $tierKey);
+    $newPoints = $oldPoints + $pts;
+    $db->execute("UPDATE `users` SET `points` = ? WHERE `id` = ?", [$newPoints, $userId], 'ii');
+
+    // Determine the pending welcome gift for next time.
+    $oldTierKey = tierForPoints($oldPoints)['key'];
+    $newTierKey = tierForPoints($newPoints)['key'];
+    $consumed = $oldPending !== '' && !empty($welcomeVars);
+    $newPending = $oldPending;
+    if (tierRank($newTierKey) > tierRank($oldTierKey) && tierRank($newTierKey) >= 1) {
+        $newPending = $newTierKey;               // promoted — grant this tier's welcome
+    } elseif ($consumed) {
+        $newPending = '';                        // welcome used on this order
+    }
+    if ($newPending !== $oldPending) {
+        $db->execute("UPDATE `users` SET `pending_welcome` = ? WHERE `id` = ?", [$newPending, $userId], 'si');
+    }
+    if ($consumed) {
+        setcookie('WELCOME_CLAIMED', '', ['expires' => time() - 3600, 'path' => '/']);
+    }
+}
 // Empty the cart now that the order is placed.
 $db->execute("DELETE FROM `cart_items` WHERE `cart` = ?", [$cartId], 'i');
 

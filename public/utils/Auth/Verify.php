@@ -5,6 +5,7 @@
  * cookie-token + sessions-table mechanism.
  */
 require_once __DIR__ . '/../../db.php';
+require_once __DIR__ . '/../../functions.php';
 
 function verifyAuth(DB $db): stdClass {
     $auth = new stdClass();
@@ -47,6 +48,9 @@ function verifyAuth(DB $db): stdClass {
     $auth->first_name = $user['first_name'];
     $auth->last_name = $user['last_name'];
     $auth->phone = $user['phone'];
+    $auth->points = (int)($user['points'] ?? 0);
+    $auth->tier = tierForPoints($auth->points);
+    $auth->pending_welcome = $user['pending_welcome'] ?? '';
     $auth->valid = true;
 
     return $auth;

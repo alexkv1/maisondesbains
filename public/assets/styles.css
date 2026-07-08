@@ -583,7 +583,33 @@ em { font-style: italic; }
 /* ============================================================
    ACCOUNT PAGE
    ============================================================ */
-.account__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem; margin-bottom: var(--space-9); flex-wrap: wrap; }
+.account__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem; margin-bottom: var(--space-8); flex-wrap: wrap; }
+
+/* Loyalty */
+.loyalty { border: 1px solid var(--border-hairline); border-radius: var(--radius-sm); padding: var(--pad-card); margin-bottom: var(--space-9); }
+.loyalty__head { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; margin-bottom: var(--space-5); }
+.loyalty__tier { font-family: var(--font-serif); font-weight: var(--weight-light); font-size: clamp(1.8rem, 4vw, 2.6rem); margin-top: 0.4rem; }
+.loyalty__points { text-align: right; }
+.loyalty__num { font-family: var(--font-mono); font-size: var(--size-h3); }
+.loyalty__lbl { display: block; font-size: var(--size-micro); letter-spacing: var(--tracking-wider); text-transform: uppercase; color: var(--text-muted); }
+.loyalty__bar { height: 2px; background: var(--border-hairline); position: relative; margin-bottom: var(--space-3); }
+.loyalty__bar span { position: absolute; left: 0; top: 0; height: 100%; background: var(--ink); transition: width var(--dur-slow) var(--ease-standard); }
+.loyalty__next { font-size: var(--size-caption); color: var(--text-muted); margin-bottom: var(--space-6); }
+.loyalty__benefits ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; margin-top: var(--space-3); }
+.loyalty__benefits li { font-size: var(--size-small); color: var(--text-secondary); display: flex; gap: 0.8rem; }
+.loyalty__benefits li span { color: var(--text-faint); font-family: var(--font-mono); }
+.loyalty__all { margin-top: var(--space-6); border-top: 1px solid var(--border-hairline); padding-top: var(--space-5); }
+.loyalty__all summary { cursor: pointer; font-family: var(--font-grotesk); font-size: var(--size-micro); letter-spacing: var(--tracking-wider); text-transform: uppercase; color: var(--text-muted); }
+.loyalty__earn { font-size: var(--size-caption); color: var(--text-muted); margin: var(--space-4) 0; }
+.loyalty__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); }
+.loyalty__card { border: 1px solid var(--border-hairline); border-radius: var(--radius-sm); padding: var(--space-4); }
+.loyalty__card.is-current { border-color: var(--ink); }
+.loyalty__cardname { font-family: var(--font-serif); font-size: var(--size-h4); display: block; }
+.loyalty__cardpts { display: block; font-size: 10px; color: var(--text-muted); margin: 4px 0 var(--space-3); }
+.loyalty__card ul { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+.loyalty__card li { font-size: var(--size-caption); color: var(--text-secondary); line-height: 1.4; }
+@media (max-width: 780px) { .loyalty__grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 460px) { .loyalty__grid { grid-template-columns: 1fr; } }
 .account__email { color: var(--text-muted); margin-top: 0.5rem; font-size: var(--size-small); }
 .account__empty { color: var(--text-secondary); font-family: var(--font-serif); font-style: italic; font-size: var(--size-body-lg); margin-top: var(--space-4); }
 .account__empty a { text-decoration: underline; text-underline-offset: 0.25em; }

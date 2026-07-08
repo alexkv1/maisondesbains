@@ -14,7 +14,7 @@ $prefill = [
 
 // Stock check on load — warn before the shopper fills in details.
 $cartId = resolveCart($db, $AUTH->valid ? $AUTH->user : null);
-$summary = cartSummary($db, $cartId);
+$summary = cartSummary($db, $cartId, false, $AUTH->valid ? $AUTH->tier['key'] : null, claimedWelcomeVariants($AUTH));
 $stockIssues = checkStock($db, $summary['items']);
 
 require $root . '/utils/layout/header.php';

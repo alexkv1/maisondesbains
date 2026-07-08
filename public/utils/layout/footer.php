@@ -5,6 +5,22 @@
  * search should set $SEARCH_PRODUCTS (array) before including.
  */
 $SEARCH_PRODUCTS = $SEARCH_PRODUCTS ?? [];
+
+// Pending welcome gift (for the tier-up popup).
+$WELCOME = null;
+if (isset($AUTH, $db) && $AUTH->valid && !empty($AUTH->pending_welcome)) {
+    $wv = welcomeGiftVariants($AUTH->pending_welcome);
+    if ($wv) {
+        $names = [];
+        foreach ($wv as $vid) {
+            $r = $db->select("SELECT p.name, v.size FROM `product_variants` v JOIN `products` p ON p.id = v.product WHERE v.identifier = ? LIMIT 1", [$vid], 's');
+            if ($r) { $names[] = $r[0]['name'] . ' (' . $r[0]['size'] . ')'; }
+        }
+        $tName = '';
+        foreach (loyaltyTiers() as $t) { if ($t['key'] === $AUTH->pending_welcome) { $tName = $t['name']; } }
+        $WELCOME = ['tier' => $tName, 'items' => $names];
+    }
+}
 ?>
 <footer class="footer">
   <div class="footer__grid">
@@ -101,10 +117,25 @@ $SEARCH_PRODUCTS = $SEARCH_PRODUCTS ?? [];
   </div>
 </div>
 
+<!-- Tier welcome gift -->
+<?php if ($WELCOME): ?>
+<div class="geo" id="welcomeModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+  <div class="geo__scrim" id="welcomeScrim"></div>
+  <div class="geo__card">
+    <span class="eyebrow">Welcome to <?= e($WELCOME['tier']) ?></span>
+    <h2 class="geo__title" id="welcomeTitle">Your welcome gift</h2>
+    <p class="geo__text">To mark your new tier, enjoy <b><?= e(implode(' and ', $WELCOME['items'])) ?></b> — complimentary with your next order.</p>
+    <button class="btn btn--primary btn--full geo__btn" id="welcomeClaim">Claim your gift</button>
+    <button class="geo__other" id="welcomeDismiss">Maybe later</button>
+  </div>
+</div>
+<?php endif; ?>
+
 <script>
   window.MDB_SEARCH = <?= json_encode(array_values($SEARCH_PRODUCTS)) ?>;
   window.MDB_CURRENCY = <?= json_encode(currencies()[currentCurrency()]) ?>;
   window.MDB_HAS_CURRENCY = <?= isset($_COOKIE['CUR']) ? 'true' : 'false' ?>;
+  window.MDB_HAS_WELCOME = <?= $WELCOME ? 'true' : 'false' ?>;
 </script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <script src="/assets/app.js"></script>

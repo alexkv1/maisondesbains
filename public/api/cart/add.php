@@ -28,12 +28,13 @@ $variantId = (int)$rows[0]['id'];
 
 $userId = $AUTH->valid ? $AUTH->user : null;
 $cartId = resolveCart($db, $userId);
+$tierKey = $AUTH->valid ? $AUTH->tier['key'] : null;
 
 // Enforce the per-item cap.
 $existing = $db->select("SELECT `quantity` FROM `cart_items` WHERE `cart` = ? AND `variant` = ? LIMIT 1", [$cartId, $variantId], 'ii');
 $current = $existing ? (int)$existing[0]['quantity'] : 0;
 if ($current >= MDB_MAX_PER_ITEM) {
-    respond(['success' => false, 'message' => 'You can add at most ' . MDB_MAX_PER_ITEM . ' of an item.', 'cart' => cartSummary($db, $cartId)], 409);
+    respond(['success' => false, 'message' => 'You can add at most ' . MDB_MAX_PER_ITEM . ' of an item.', 'cart' => cartSummary($db, $cartId, false, $tierKey, claimedWelcomeVariants($AUTH))], 409);
 }
 $newQty = min($current + $qty, MDB_MAX_PER_ITEM);
 
@@ -47,4 +48,4 @@ if (!$ok) {
     respond(['success' => false, 'message' => 'Could not add to your bag.'], 500);
 }
 
-respond(['success' => true, 'cart' => cartSummary($db, $cartId)]);
+respond(['success' => true, 'cart' => cartSummary($db, $cartId, false, $tierKey, claimedWelcomeVariants($AUTH))]);

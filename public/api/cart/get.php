@@ -8,7 +8,8 @@ $userId = $AUTH->valid ? $AUTH->user : null;
 $giftWrap = !empty($_GET['gift_wrap']);
 
 $cartId = resolveCart($db, $userId);
-$summary = cartSummary($db, $cartId, $giftWrap);
+$tierKey = $AUTH->valid ? $AUTH->tier['key'] : null;
+$summary = cartSummary($db, $cartId, $giftWrap, $tierKey, claimedWelcomeVariants($AUTH));
 
 respond([
     'success' => true,

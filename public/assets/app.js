@@ -98,16 +98,17 @@ function lineHTML(it, asLink) {
   const nameEl = asLink
     ? `<a class="line__name" href="/product?id=${it.product_identifier}">${it.name}</a>`
     : `<span class="line__name">${it.name}</span>`;
+  const sizeEl = it.size ? `<span class="line__size mono">${it.size}</span>` : '';
   if (it.is_gift) {
     return `
     <div class="line line--gift">
       ${plate}
       <div class="line__body">
-        <span class="line__brand">${it.brand} · Complimentary</span>
-        ${nameEl}
-        <span class="line__size mono">${it.size}</span>
+        <span class="line__brand">${it.is_masked ? it.brand : it.brand + ' · Complimentary'}</span>
+        <span class="line__name">${it.name}</span>
+        ${sizeEl}
         <div class="line__foot">
-          <span class="gifttag">Gift</span>
+          <span class="gifttag">${it.gift_label || 'Gift'}</span>
           <span class="line__price mono">Free</span>
         </div>
       </div>
@@ -119,7 +120,7 @@ function lineHTML(it, asLink) {
       <div class="line__body">
         <span class="line__brand">${it.brand}</span>
         ${nameEl}
-        <span class="line__size mono">${it.size}</span>
+        ${sizeEl}
         <div class="line__foot">
           <div class="qty">
             <button data-dec="${it.identifier}" aria-label="Decrease">−</button>
@@ -226,7 +227,7 @@ function renderCheckoutSummary(cart) {
   lines.innerHTML = cart.items.map(it => `
     <div class="coitem">
       <span class="coitem__q mono">${it.quantity}×</span>
-      <span class="coitem__n">${it.brand} — ${it.name} <span class="coitem__size">(${it.size})</span>${it.is_gift ? ' <span class="coitem__size">· Gift</span>' : ''}</span>
+      <span class="coitem__n">${it.brand} — ${it.name}${it.size ? ` <span class="coitem__size">(${it.size})</span>` : ''}${it.is_gift ? ` <span class="coitem__size">· ${it.gift_label || 'Gift'}</span>` : ''}</span>
       <span class="mono">${it.is_gift ? 'Free' : gbp(it.line_total)}</span>
     </div>`).join('') || `<p class="drawer__empty">Your bag is empty.</p>`;
   const set = (id, v) => { const el = $(id); if (el) el.textContent = v; };
@@ -234,7 +235,11 @@ function renderCheckoutSummary(cart) {
   set('#coShipping', cart.count === 0 ? '—' : (cart.shipping_cents === 0 ? 'Complimentary' : gbp(cart.shipping_cents)));
   set('#coTotal', gbp(cart.total_cents));
   const giftRow = $('#coGiftRow');
-  if (giftRow) giftRow.hidden = cart.gift_wrap_cents === 0;
+  const wrapOn = $('#co-gift') && $('#co-gift').checked;
+  if (giftRow) {
+    giftRow.hidden = !wrapOn;
+    if (wrapOn && $('#coGift')) $('#coGift').textContent = cart.gift_wrap_cents === 0 ? 'Free' : gbp(cart.gift_wrap_cents);
+  }
 }
 
 if (checkoutForm) {
@@ -436,6 +441,24 @@ if ($('#giftDismiss')) $('#giftDismiss').addEventListener('click', () => { setCo
 if ($('#giftScrim')) $('#giftScrim').addEventListener('click', () => { setCookie('GIFT_SEEN', '1', 1); closeGift(); });
 /* Claim from the in-cart nudge link */
 document.addEventListener('click', e => { if (e.target.closest('#nudgeClaim')) { e.preventDefault(); claimGift(); } });
+
+/* ---- Tier welcome-gift modal ---- */
+const welcomeModal = $('#welcomeModal');
+function closeWelcome() { if (!welcomeModal) return; welcomeModal.classList.remove('is-open'); welcomeModal.setAttribute('aria-hidden', 'true'); }
+function claimWelcome() {
+  setCookie('WELCOME_CLAIMED', '1', 30);
+  setCookie('WELCOME_SEEN', '1', 1);
+  closeWelcome();
+  refreshCart().then(() => openDrawer());
+}
+if (welcomeModal && window.MDB_HAS_WELCOME && !getCookie('WELCOME_SEEN') && !getCookie('WELCOME_CLAIMED')) {
+  setCookie('WELCOME_SEEN', '1', 1);
+  welcomeModal.classList.add('is-open');
+  welcomeModal.setAttribute('aria-hidden', 'false');
+}
+if ($('#welcomeClaim')) $('#welcomeClaim').addEventListener('click', claimWelcome);
+if ($('#welcomeDismiss')) $('#welcomeDismiss').addEventListener('click', () => { setCookie('WELCOME_SEEN', '1', 1); closeWelcome(); });
+if ($('#welcomeScrim')) $('#welcomeScrim').addEventListener('click', () => { setCookie('WELCOME_SEEN', '1', 1); closeWelcome(); });
 
 /* ============================================================
    ICONS + INITIAL CART LOAD
