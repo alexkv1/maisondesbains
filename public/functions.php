@@ -86,11 +86,11 @@ function loyaltyTiers(): array {
         ['key' => 'silver',   'name' => 'Silver',   'min' => 0,    'max' => 500,
          'benefits' => ['Complimentary gift wrapping']],
         ['key' => 'gold',     'name' => 'Gold',     'min' => 501,  'max' => 2000,
-         'benefits' => ['Complimentary gift wrapping', 'Early access to new arrivals & private editions']],
+         'benefits' => ['A welcome gift on reaching Gold', 'Complimentary gift wrapping', 'Early access to new arrivals & private editions']],
         ['key' => 'platinum', 'name' => 'Platinum', 'min' => 2001, 'max' => 5000,
-         'benefits' => ['Complimentary gift wrapping', 'Complimentary delivery over 50 € / 500 kr', 'A complimentary gift with every order', 'Priority dispatch']],
+         'benefits' => ['A welcome gift on reaching Platinum', 'Complimentary gift wrapping', 'Complimentary delivery over 50 € / 500 kr', 'A complimentary gift with every order', 'Priority dispatch']],
         ['key' => 'diamond',  'name' => 'Diamond',  'min' => 5001, 'max' => null,
-         'benefits' => ['Complimentary gift wrapping', 'Complimentary delivery over 50 € / 500 kr', 'A complimentary gift with every order', 'Double points on every order', 'Annual full-size gift & private concierge']],
+         'benefits' => ['A welcome gift on reaching Diamond', 'Complimentary gift wrapping', 'Complimentary delivery over 50 € / 500 kr', 'A complimentary gift with every order', 'Double points on every order', 'Annual full-size gift & private concierge']],
     ];
 }
 
