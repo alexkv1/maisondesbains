@@ -225,7 +225,7 @@ em { font-style: italic; }
 }
 .card__photo {
   position: absolute; inset: 0; width: 100%; height: 100%;
-  object-fit: contain; padding: 7% 9%;
+  object-fit: contain; padding: 18% 20%;
   transition: transform var(--dur-drape) var(--ease-standard);
 }
 .card:hover .card__photo { transform: scale(1.04); }
@@ -503,7 +503,7 @@ em { font-style: italic; }
   display: grid; place-items: center; position: sticky; top: 100px;
 }
 .product__initial { font-family: var(--font-serif); font-style: italic; font-weight: var(--weight-light); font-size: clamp(6rem, 14vw, 12rem); color: var(--gray-300); }
-.product__photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 6% 8%; }
+.product__photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 12% 14%; }
 .product__plate:has(.product__photo) { background: var(--paper); }
 .product__ref { position: absolute; left: var(--space-5); bottom: var(--space-5); font-size: var(--size-micro); color: var(--text-muted); }
 .product__info { padding-top: var(--space-4); }
