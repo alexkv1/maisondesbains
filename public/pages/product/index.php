@@ -79,7 +79,7 @@ require $root . '/utils/layout/header.php';
             data-sku="<?= e($v['sku']) ?>"
             data-sold="<?= $vSold ? '1' : '0' ?>"
             <?= $vSold ? 'disabled' : '' ?>>
-            <?= e($v['size']) ?><?= $vSold ? ' · Soon' : '' ?>
+            <?= e($v['size']) ?><?= $vSold ? ' · Sold out' : '' ?>
           </button>
           <?php endforeach; ?>
         </div>

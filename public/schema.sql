@@ -156,12 +156,14 @@ FROM (
   SELECT 'santal-33-shower-gel',            'santal-33-shower-gel-450ml',           '450 ml',    0,   0,   'MDB·LL—901L', 0,   1, 2 UNION ALL
   SELECT 'santal-33-body-lotion',           'santal-33-body-lotion-90ml',           '90 ml',     2000, 229, 'MDB·LL—902',  100, 0, 1 UNION ALL
   SELECT 'santal-33-body-lotion',           'santal-33-body-lotion-450ml',          '450 ml',    0,   0,   'MDB·LL—902L', 0,   1, 2 UNION ALL
-  SELECT 'bal-dafrique-shower-gel',         'bal-dafrique-shower-gel-50ml',         '50 ml',     1500, 169, 'MDB·BY—501',  100, 0, 1 UNION ALL
-  SELECT 'bal-dafrique-shower-gel',         'bal-dafrique-shower-gel-450ml',        '450 ml',    0,   0,   'MDB·BY—501L', 0,   1, 2 UNION ALL
-  SELECT 'bal-dafrique-body-lotion',        'bal-dafrique-body-lotion-50ml',        '50 ml',     1500, 169, 'MDB·BY—502',  100, 0, 1 UNION ALL
-  SELECT 'bal-dafrique-body-lotion',        'bal-dafrique-body-lotion-450ml',       '450 ml',    0,   0,   'MDB·BY—502L', 0,   1, 2 UNION ALL
-  SELECT 'bal-dafrique-soap',               'bal-dafrique-soap-30g',                '30 g',      800,  89,  'MDB·BY—030',  100, 0, 1 UNION ALL
-  SELECT 'bal-dafrique-hand-wash',          'bal-dafrique-hand-wash-450ml',         '450 ml',    3900, 449, 'MDB·BY—450',  100, 0, 1
+  SELECT 'bal-dafrique-shower-gel',         'bal-dafrique-shower-gel-50ml',         '50 ml',     1500, 169, 'MDB·BY—501',  192, 0, 1 UNION ALL
+  SELECT 'bal-dafrique-shower-gel',         'bal-dafrique-shower-gel-225ml',        '225 ml',    0,   0,   'MDB·BY—501M', 0,   1, 2 UNION ALL
+  SELECT 'bal-dafrique-shower-gel',         'bal-dafrique-shower-gel-450ml',        '450 ml',    0,   0,   'MDB·BY—501L', 0,   1, 3 UNION ALL
+  SELECT 'bal-dafrique-body-lotion',        'bal-dafrique-body-lotion-50ml',        '50 ml',     1500, 169, 'MDB·BY—502',  192, 0, 1 UNION ALL
+  SELECT 'bal-dafrique-body-lotion',        'bal-dafrique-body-lotion-225ml',       '225 ml',    0,   0,   'MDB·BY—502M', 0,   1, 2 UNION ALL
+  SELECT 'bal-dafrique-body-lotion',        'bal-dafrique-body-lotion-450ml',       '450 ml',    0,   0,   'MDB·BY—502L', 0,   1, 3 UNION ALL
+  SELECT 'bal-dafrique-soap',               'bal-dafrique-soap-30g',                '30 g',      800,  89,  'MDB·BY—030',  280, 0, 1 UNION ALL
+  SELECT 'bal-dafrique-hand-wash',          'bal-dafrique-hand-wash-450ml',         '450 ml',    3900, 449, 'MDB·BY—450',  15,  0, 1
 ) AS v
 JOIN `products` p ON p.identifier = v.pslug
 ON DUPLICATE KEY UPDATE
