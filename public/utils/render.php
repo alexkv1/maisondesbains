@@ -44,7 +44,7 @@ function renderCard(array $p, array $variants = []): string {
 
     $flag = '';
     if ($soldOut) {
-        $flag = '<span class="card__flag">Coming Soon</span>';
+        $flag = '<span class="card__flag">Sold Out</span>';
     } elseif ($badge) {
         $flag = '<span class="card__flag">' . e($badge) . '</span>';
     }

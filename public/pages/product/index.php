@@ -50,7 +50,7 @@ require $root . '/utils/layout/header.php';
 
   <div class="product__grid">
     <div class="product__plate">
-      <?php if ($allSoldOut): ?><span class="card__flag">Coming Soon</span>
+      <?php if ($allSoldOut): ?><span class="card__flag">Sold Out</span>
       <?php elseif (!empty($p['badge'])): ?><span class="card__flag"><?= e($p['badge']) ?></span><?php endif; ?>
       <?php if (!empty($p['image'])): ?>
         <img class="product__photo" src="<?= e($p['image']) ?>" alt="<?= e($p['brand'] . ' ' . $p['name']) ?>" />
@@ -99,8 +99,8 @@ require $root . '/utils/layout/header.php';
 
       <div class="product__actions">
         <?php if ($allSoldOut): ?>
-          <button class="btn btn--secondary" disabled>Coming Soon</button>
-          <p class="product__soldnote">These sizes arrive shortly. Sign in to be told when they land.</p>
+          <button class="btn btn--secondary" disabled>Sold Out</button>
+          <p class="product__soldnote">This one's gone for now. Sign in to be told when it returns.</p>
         <?php else: ?>
           <button class="btn btn--primary btn--lg" id="pdpAdd" data-add="<?= e($def['identifier']) ?>">Add to Basket — <span id="pdpAddPrice"><?= money(productPrice($def)) ?></span></button>
           <button class="card__wish product__wish" data-wish="<?= e($p['identifier']) ?>" aria-label="Add to wishlist"><?= MDB_HEART ?></button>
