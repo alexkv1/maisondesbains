@@ -160,7 +160,8 @@ VALUES
   ('bal-dafrique-body-lotion','Byredo',  'Bal d''Afrique Body Lotion', 'Body Lotion', 'Body', 'Bergamot · Violet · Vetiver · Musk', 'A supple body lotion of bergamot, violet and vetiver. The 1920s Paris–Africa reverie, worn on skin.', '/assets/img/bal-dafrique-body-lotion.png', NULL, UNIX_TIMESTAMP()),
   ('bal-dafrique-soap',       'Byredo',  'Bal d''Afrique Soap',       'Soap', 'Hands', 'Bergamot · Neroli · Black Amber', 'A milled soap of Bal d''Afrique — bergamot and black amber, kept by the basin.', '/assets/img/bal-dafrique-soap.jpg', NULL, UNIX_TIMESTAMP()),
   ('bal-dafrique-hand-wash',  'Byredo',  'Bal d''Afrique Hand Wash',  'Hand Wash', 'Hands', 'Bergamot · Neroli · Vetiver · Amber', 'A generous hand wash of Bal d''Afrique. Neroli and vetiver, left on the hands like a signature.', '/assets/img/bal-dafrique-hand-wash.png', NULL, UNIX_TIMESTAMP()),
-  ('bibliotheque-candle',     'Byredo',  'Bibliothèque Candle',       'Scented Candle', 'Home', 'Peach · Plum · Leather · Patchouli · Vanilla', 'The scent of a private library — peach and plum over worn leather, patchouli and vanilla. Byredo''s Bibliothèque, in candlelight.', '/assets/img/bibliotheque-candle.png', NULL, UNIX_TIMESTAMP())
+  ('bibliotheque-candle',     'Byredo',  'Bibliothèque Candle',       'Scented Candle', 'Home', 'Peach · Plum · Leather · Patchouli · Vanilla', 'The scent of a private library — peach and plum over worn leather, patchouli and vanilla. Byredo''s Bibliothèque, in candlelight.', '/assets/img/bibliotheque-candle.png', NULL, UNIX_TIMESTAMP()),
+  ('gris-dior-soap',          'Dior',    'Gris Dior Hand & Body Soap','Liquid Hand & Body Soap', 'Hands', 'Bergamot · Rose · Patchouli · Oakmoss', 'A liquid hand and body soap in the grey-chypre signature of Gris Dior — bergamot and rose over patchouli and oakmoss.', '/assets/img/gris-dior-soap.png', NULL, UNIX_TIMESTAMP())
 ON DUPLICATE KEY UPDATE
   `brand`=VALUES(`brand`), `name`=VALUES(`name`), `line`=VALUES(`line`), `category`=VALUES(`category`),
   `notes`=VALUES(`notes`), `blurb`=VALUES(`blurb`), `image`=VALUES(`image`), `badge`=VALUES(`badge`);
@@ -182,7 +183,8 @@ FROM (
   SELECT 'bal-dafrique-body-lotion',        'bal-dafrique-body-lotion-450ml',       '450 ml',    0,   0,   'MDB·BY—502L', 0,   1, 3 UNION ALL
   SELECT 'bal-dafrique-soap',               'bal-dafrique-soap-30g',                '30 g',      800,  89,  'MDB·BY—030',  280, 0, 1 UNION ALL
   SELECT 'bal-dafrique-hand-wash',          'bal-dafrique-hand-wash-450ml',         '450 ml',    3900, 449, 'MDB·BY—450',  15,  0, 1 UNION ALL
-  SELECT 'bibliotheque-candle',             'bibliotheque-candle-70g',              '70 g',      2400, 249, 'MDB·BY—BIB',  0,   1, 1
+  SELECT 'bibliotheque-candle',             'bibliotheque-candle-70g',              '70 g',      2400, 249, 'MDB·BY—BIB',  0,   1, 1 UNION ALL
+  SELECT 'gris-dior-soap',                  'gris-dior-soap-300ml',                 '300 ml',    4500, 499, 'MDB·DR—GD3',  0,   1, 1
 ) AS v
 JOIN `products` p ON p.identifier = v.pslug
 ON DUPLICATE KEY UPDATE
