@@ -42,7 +42,7 @@ function getCookie(k) {
 /* ============================================================
    FILTERS (home)
    ============================================================ */
-const CATS = ['All', 'Soap', 'Wash', 'Body'];
+const CATS = ['All', 'Body', 'Bath', 'Hands', 'Home'];
 const filtersEl = $('#filters');
 if (filtersEl) {
   filtersEl.innerHTML = CATS.map((c, i) =>

@@ -29,10 +29,10 @@ header('Cache-Control: no-cache, no-store, must-revalidate');
 <header class="header" id="header">
   <nav class="nav">
     <ul class="nav__links">
-      <li><a href="/#collection" data-cat="Soap">Soap</a></li>
-      <li><a href="/#collection" data-cat="Wash">Wash</a></li>
       <li><a href="/#collection" data-cat="Body">Body</a></li>
-      <li><a href="/#journal">The Journal</a></li>
+      <li><a href="/#collection" data-cat="Bath">Bath</a></li>
+      <li><a href="/#collection" data-cat="Hands">Hands</a></li>
+      <li><a href="/#collection" data-cat="Home">Home</a></li>
     </ul>
     <a href="/" class="wordmark" aria-label="Maison Des Bains — home">Maison Des Bains</a>
     <div class="nav__actions">

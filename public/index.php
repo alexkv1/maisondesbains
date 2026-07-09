@@ -37,9 +37,10 @@ require __DIR__ . '/utils/layout/header.php';
   </section>
 
   <section class="catstrip" aria-label="Categories">
-    <a href="#collection" class="catstrip__item" data-cat="Soap"><span class="num">01</span><span class="cat">Soap</span></a>
-    <a href="#collection" class="catstrip__item" data-cat="Wash"><span class="num">02</span><span class="cat">Wash</span></a>
-    <a href="#collection" class="catstrip__item" data-cat="Body"><span class="num">03</span><span class="cat">Body</span></a>
+    <a href="#collection" class="catstrip__item" data-cat="Body"><span class="num">01</span><span class="cat">Body</span></a>
+    <a href="#collection" class="catstrip__item" data-cat="Bath"><span class="num">02</span><span class="cat">Bath</span></a>
+    <a href="#collection" class="catstrip__item" data-cat="Hands"><span class="num">03</span><span class="cat">Hands</span></a>
+    <a href="#collection" class="catstrip__item" data-cat="Home"><span class="num">04</span><span class="cat">Home</span></a>
   </section>
 
   <section class="collection" id="collection">
