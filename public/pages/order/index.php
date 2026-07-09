@@ -70,7 +70,7 @@ else:
       <aside class="confirm__summary">
         <span class="eyebrow">Summary</span>
         <div class="summary__row"><span>Subtotal</span><span class="mono"><?= money((int)$order['subtotal_cents'], $order['currency']) ?></span></div>
-        <div class="summary__row"><span>Delivery</span><span class="mono"><?= (int)$order['shipping_cents'] === 0 ? 'Complimentary' : money((int)$order['shipping_cents'], $order['currency']) ?></span></div>
+        <div class="summary__row"><span>Delivery</span><span class="mono"><?= money((int)$order['shipping_cents'], $order['currency']) ?></span></div>
         <?php if ((int)$order['gift_wrap_cents'] > 0): ?>
         <div class="summary__row"><span>Gift wrap</span><span class="mono"><?= money((int)$order['gift_wrap_cents'], $order['currency']) ?></span></div>
         <?php endif; ?>

@@ -23,7 +23,7 @@ header('Cache-Control: no-cache, no-store, must-revalidate');
 <body>
 
 <div class="announce announce--center">
-  <span>Complimentary delivery over <?= freeShippingLabel() ?></span>
+  <span>Fast, tracked delivery on every order</span>
 </div>
 
 <header class="header" id="header">

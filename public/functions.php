@@ -88,9 +88,9 @@ function loyaltyTiers(): array {
         ['key' => 'gold',     'name' => 'Gold',     'min' => 501,  'max' => 2000,
          'benefits' => ['A welcome gift on reaching Gold', 'Complimentary gift wrapping', 'Early access to new arrivals & private editions']],
         ['key' => 'platinum', 'name' => 'Platinum', 'min' => 2001, 'max' => 5000,
-         'benefits' => ['A welcome gift on reaching Platinum', 'Complimentary gift wrapping', 'Complimentary delivery over 50 € / 500 kr', 'A complimentary gift with every order', 'Priority dispatch']],
+         'benefits' => ['A welcome gift on reaching Platinum', 'Complimentary gift wrapping', 'A complimentary gift with every order', 'Priority dispatch']],
         ['key' => 'diamond',  'name' => 'Diamond',  'min' => 5001, 'max' => null,
-         'benefits' => ['A welcome gift on reaching Diamond', 'Complimentary gift wrapping', 'Complimentary delivery over 50 € / 500 kr', 'A complimentary gift with every order', 'Double points on every order', 'Annual full-size gift & private concierge']],
+         'benefits' => ['A welcome gift on reaching Diamond', 'Complimentary gift wrapping', 'A complimentary gift with every order', 'Double points on every order', 'Annual full-size gift & private concierge']],
     ];
 }
 
@@ -108,11 +108,9 @@ function tierForPoints(int $points): array {
 /** Mechanical benefits derived from a tier key. */
 function tierBenefits(?string $key): array {
     $free_wrap        = in_array($key, ['silver', 'gold', 'platinum', 'diamond'], true);
-    // Free delivery is a Platinum/Diamond perk, over the gift_threshold (€50 / 500 kr).
-    $free_shipping    = in_array($key, ['platinum', 'diamond'], true);
     $auto_gift        = in_array($key, ['platinum', 'diamond'], true);
     $points_multiplier = $key === 'diamond' ? 2 : 1;
-    return compact('free_wrap', 'free_shipping', 'auto_gift', 'points_multiplier');
+    return compact('free_wrap', 'auto_gift', 'points_multiplier');
 }
 
 /** Points earned for an order total (in the currency's minor unit). */

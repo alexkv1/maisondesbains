@@ -24,11 +24,11 @@ require __DIR__ . '/utils/layout/header.php';
 <main id="top">
 
   <section class="hero">
-    <span class="hero__ref reveal">Le Labo · Byredo</span>
+    <span class="hero__ref reveal">Le Labo · Byredo · &amp; more</span>
     <div class="hero__inner">
-      <p class="eyebrow reveal">Luxury bath &amp; body — free delivery over <?= freeShippingLabel() ?></p>
-      <h1 class="hero__title reveal" data-delay="1">Le&nbsp;Labo &amp; Byredo,<br />for <em>your</em> bathroom.</h1>
-      <p class="hero__lede reveal" data-delay="2">Shop cult shower gels, body lotions and soaps — delivered beautifully. A complimentary gift on every order over <?= giftThresholdLabel() ?>.</p>
+      <p class="eyebrow reveal">The most coveted bath &amp; body — fast, tracked delivery</p>
+      <h1 class="hero__title reveal" data-delay="1">The world's most <em>coveted</em><br />bath &amp; body.</h1>
+      <p class="hero__lede reveal" data-delay="2">Shop cult shower gels, body lotions and soaps from the most sought-after houses — Le&nbsp;Labo, Byredo and more. A complimentary gift on every order over <?= giftThresholdLabel() ?>.</p>
       <div class="hero__actions reveal" data-delay="3">
         <a href="#collection" class="btn btn--primary">Shop now</a>
         <a href="#collection" class="btn btn--ghost">View the collection →</a>

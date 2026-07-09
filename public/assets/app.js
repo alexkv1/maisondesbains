@@ -238,7 +238,7 @@ function renderCheckoutSummary(cart) {
     </div>`).join('') || `<p class="drawer__empty">Your bag is empty.</p>`;
   const set = (id, v) => { const el = $(id); if (el) el.textContent = v; };
   set('#coSubtotal', gbp(cart.subtotal_cents));
-  set('#coShipping', cart.count === 0 ? '—' : (cart.shipping_cents === 0 ? 'Complimentary' : gbp(cart.shipping_cents)));
+  set('#coShipping', cart.count === 0 ? '—' : gbp(cart.shipping_cents));
   set('#coTotal', gbp(cart.total_cents));
   const giftRow = $('#coGiftRow');
   const wrapOn = $('#co-gift') && $('#co-gift').checked;

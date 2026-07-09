@@ -59,7 +59,7 @@ $SEARCH_PRODUCTS = $SEARCH_PRODUCTS ?? [];
       <span>Subtotal</span>
       <span id="drawerTotal" class="mono"><?= money(0) ?></span>
     </div>
-    <p class="drawer__ship">Complimentary delivery over <?= freeShippingLabel() ?>. Taxes calculated at checkout.</p>
+    <p class="drawer__ship">Fast, tracked delivery. Calculated at checkout.</p>
     <a class="btn btn--primary btn--full" href="/checkout" id="checkoutBtn">Proceed to checkout</a>
   </div>
 </aside>

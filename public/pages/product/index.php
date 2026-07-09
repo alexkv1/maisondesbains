@@ -108,7 +108,7 @@ require $root . '/utils/layout/header.php';
       </div>
 
       <ul class="product__meta-list">
-        <li><span>—</span> Complimentary delivery over <?= freeShippingLabel() ?></li>
+        <li><span>—</span> Fast, tracked delivery</li>
         <li><span>—</span> Wrapped by hand in unmarked paper</li>
         <li><span>—</span> Selected by the Maison, never manufactured</li>
       </ul>

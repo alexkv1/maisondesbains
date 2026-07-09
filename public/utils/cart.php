@@ -212,13 +212,9 @@ function cartSummary(DB $db, int $cartId, bool $giftWrap = false, ?string $tierK
 
     $giftWrapAmt   = ($giftWrap && $count > 0) ? ($benefits['free_wrap'] ? 0 : $cfg['gift_wrap']) : 0;
 
-    // Delivery: free for everyone over the universal threshold (€75 / 850 kr),
-    // and free for Platinum/Diamond over the member threshold (€50 / 500 kr).
-    $freeThreshold  = $cfg['free_threshold'];
-    $memberFree     = $benefits['free_shipping'] && $subtotal >= $cfg['gift_threshold'];
-    $freeDelivery   = ($subtotal >= $freeThreshold) || $memberFree;
-    $shipping       = ($count > 0 && !$freeDelivery) ? $cfg['shipping'] : 0;
-    $total          = $subtotal + $shipping + $giftWrapAmt;
+    // Fast, tracked delivery — a flat fee on every order (no free delivery).
+    $shipping      = $count > 0 ? $cfg['shipping'] : 0;
+    $total         = $subtotal + $shipping + $giftWrapAmt;
 
     // Keys keep the *_cents suffix for continuity; values are integers in the
     // active currency's unit (EUR cents or SEK kronor).
@@ -230,12 +226,10 @@ function cartSummary(DB $db, int $cartId, bool $giftWrap = false, ?string $tierK
         'shipping_cents'   => $shipping,
         'gift_wrap_cents'  => $giftWrapAmt,
         'total_cents'      => $total,
-        'free_threshold'   => $freeThreshold,
         'gift_threshold'   => $giftThreshold,
         'gift_qualified'   => $giftQualified,
         'gift_claimed'     => $giftInclude,
         'gift_remaining'   => max(0, $giftThreshold - $subtotal),
         'free_wrap'        => $benefits['free_wrap'],
-        'free_shipping'    => $benefits['free_shipping'],
     ];
 }
