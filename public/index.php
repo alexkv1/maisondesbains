@@ -40,7 +40,6 @@ require __DIR__ . '/utils/layout/header.php';
     <a href="#collection" class="catstrip__item" data-cat="Soap"><span class="num">01</span><span class="cat">Soap</span></a>
     <a href="#collection" class="catstrip__item" data-cat="Wash"><span class="num">02</span><span class="cat">Wash</span></a>
     <a href="#collection" class="catstrip__item" data-cat="Body"><span class="num">03</span><span class="cat">Body</span></a>
-    <a href="#collection" class="catstrip__item" data-cat="Set"><span class="num">04</span><span class="cat">Sets</span></a>
   </section>
 
   <section class="collection" id="collection">

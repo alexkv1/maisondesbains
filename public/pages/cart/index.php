@@ -13,7 +13,6 @@ require $root . '/utils/layout/header.php';
   <div class="cartpage__grid" id="cartPage" data-empty="The basket is empty.">
     <div class="cartpage__lines" id="cartLines"></div>
     <aside class="cartpage__summary" id="cartSummary">
-      <div class="cart-progress" id="cartPageProgress"></div>
       <div class="summary__row summary__row--total"><span>Subtotal</span><span class="mono" id="sumSubtotal"><?= money(0) ?></span></div>
       <p class="drawer__ship">Complimentary delivery over <?= freeShippingLabel() ?>. Delivery &amp; taxes calculated at checkout.</p>
       <a class="btn btn--primary btn--full" href="/checkout" id="cartCheckout">Proceed to checkout</a>

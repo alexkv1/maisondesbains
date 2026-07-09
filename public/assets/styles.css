@@ -156,7 +156,7 @@ em { font-style: italic; }
    CATEGORY STRIP
    ============================================================ */
 .catstrip {
-  display: grid; grid-template-columns: repeat(4, 1fr);
+  display: grid; grid-template-columns: repeat(3, 1fr);
   border-bottom: 1px solid var(--border-hairline);
 }
 .catstrip__item {
@@ -165,7 +165,6 @@ em { font-style: italic; }
   transition: background var(--dur-base) var(--ease-standard);
 }
 .catstrip__item:last-child { border-right: none; }
-@media (max-width: 720px) { .catstrip { grid-template-columns: repeat(2, 1fr); } .catstrip__item:nth-child(2) { border-right: none; } }
 .catstrip__item:hover { background: var(--ivory-deep); }
 .catstrip__item .num { font-family: var(--font-mono); font-size: var(--size-caption); color: var(--text-muted); letter-spacing: 0; }
 .catstrip__item .cat {
@@ -390,12 +389,6 @@ em { font-style: italic; }
 .switch__dot { position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: var(--radius-full); background: var(--ink); transition: transform var(--dur-base) var(--ease-standard); }
 .switch[aria-checked="true"] { background: var(--ink); }
 .switch[aria-checked="true"] .switch__dot { transform: translateX(18px); background: var(--ivory); }
-.cart-progress { margin-bottom: var(--space-4); }
-.cart-progress:empty { display: none; }
-.cart-progress__bar { height: 2px; background: var(--border-hairline); position: relative; margin-bottom: 8px; }
-.cart-progress__bar span { position: absolute; left: 0; top: 0; height: 100%; background: var(--ink); transition: width var(--dur-slow) var(--ease-standard); }
-.cart-progress__msg { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-secondary); }
-
 .drawer__row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
 .drawer__row span:first-child { font-family: var(--font-grotesk); font-weight: var(--weight-medium); font-size: var(--size-caption); letter-spacing: var(--tracking-wider); text-transform: uppercase; color: var(--text-secondary); }
 .drawer__row span:last-child { font-family: var(--font-mono); font-size: var(--size-body-lg); }

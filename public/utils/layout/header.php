@@ -29,7 +29,6 @@ $signedIn   = isset($AUTH) && $AUTH->valid;
       <li><a href="/#collection" data-cat="Soap">Soap</a></li>
       <li><a href="/#collection" data-cat="Wash">Wash</a></li>
       <li><a href="/#collection" data-cat="Body">Body</a></li>
-      <li><a href="/#collection" data-cat="Set">Sets</a></li>
       <li><a href="/#journal">The Journal</a></li>
     </ul>
     <a href="/" class="wordmark" aria-label="Maison Des Bains — home">Maison Des Bains</a>
