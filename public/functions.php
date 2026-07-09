@@ -164,12 +164,24 @@ function paymentMinor(int $amount, string $code): int {
     return $code === 'EUR' ? $amount : $amount * 100;
 }
 
-/** Free-delivery threshold, formatted without trailing decimals (e.g. €75, 850 kr). */
-function freeShippingLabel(?string $code = null): string {
+/** Format an amount (in the currency's unit) without trailing decimals (€75, 850 kr). */
+function moneyPlain(int $amount, ?string $code = null): string {
     $code = $code && isset(currencies()[$code]) ? $code : currentCurrency();
     $cur  = currencies()[$code];
-    $num  = number_format($cur['free_threshold'] / $cur['minor'], 0, '.', $cur['thousands']);
+    $num  = number_format($amount / $cur['minor'], 0, '.', $cur['thousands']);
     return $cur['position'] === 'before' ? $cur['symbol'] . $num : $num . ' ' . $cur['symbol'];
+}
+
+/** Free-delivery threshold, formatted without trailing decimals. */
+function freeShippingLabel(?string $code = null): string {
+    $code = $code && isset(currencies()[$code]) ? $code : currentCurrency();
+    return moneyPlain(currencies()[$code]['free_threshold'], $code);
+}
+
+/** Complimentary-gift spend threshold, formatted without trailing decimals. */
+function giftThresholdLabel(?string $code = null): string {
+    $code = $code && isset(currencies()[$code]) ? $code : currentCurrency();
+    return moneyPlain(currencies()[$code]['gift_threshold'], $code);
 }
 
 /** True if the request method matches, else 405. */

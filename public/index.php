@@ -24,14 +24,14 @@ require __DIR__ . '/utils/layout/header.php';
 <main id="top">
 
   <section class="hero">
-    <span class="hero__ref reveal">N° 01 — Spring Edition</span>
+    <span class="hero__ref reveal">Le Labo · Byredo</span>
     <div class="hero__inner">
-      <p class="eyebrow reveal">The Bath, Curated</p>
-      <h1 class="hero__title reveal" data-delay="1">We don't sell soap.<br />We keep the <em>ritual</em> of water.</h1>
-      <p class="hero__lede reveal" data-delay="2">A house that edits, rather than shouts — the washes, lotions and soaps of Le&nbsp;Labo and Byredo, chosen for how they hold a room.</p>
+      <p class="eyebrow reveal">Luxury bath &amp; body — free delivery over <?= freeShippingLabel() ?></p>
+      <h1 class="hero__title reveal" data-delay="1">Le&nbsp;Labo &amp; Byredo,<br />for <em>your</em> bathroom.</h1>
+      <p class="hero__lede reveal" data-delay="2">Shop cult shower gels, body lotions and soaps — delivered beautifully. A complimentary gift on every order over <?= giftThresholdLabel() ?>.</p>
       <div class="hero__actions reveal" data-delay="3">
-        <a href="#collection" class="btn btn--primary">Shop the Maison</a>
-        <a href="#edit" class="btn btn--ghost">The Grey Bath →</a>
+        <a href="#collection" class="btn btn--primary">Shop now</a>
+        <a href="#collection" class="btn btn--ghost">View the collection →</a>
       </div>
     </div>
   </section>
