@@ -23,7 +23,7 @@ header('Cache-Control: no-cache, no-store, must-revalidate');
 <body>
 
 <div class="announce announce--center">
-  <span>The names you covet, at prices you don't expect · a complimentary gift over <?= giftThresholdLabel() ?></span>
+  <span>Fast shipping · Complimentary gift over <?= giftThresholdLabel() ?></span>
 </div>
 
 <header class="header" id="header">
