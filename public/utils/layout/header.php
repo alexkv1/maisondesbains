@@ -4,9 +4,12 @@
  * optional $PAGE_TITLE and $PAGE_DESC. Requires $AUTH to be available
  * (include utils/Auth/Verify.php first) to reflect sign-in state.
  */
-$PAGE_TITLE = $PAGE_TITLE ?? 'Maison Des Bains — The Bath, Curated';
-$PAGE_DESC  = $PAGE_DESC ?? 'A monochrome house that keeps the ritual of water. Le Labo and Byredo.';
+$PAGE_TITLE = $PAGE_TITLE ?? 'Maison Des Bains — Le Labo & Byredo Bath & Body';
+$PAGE_DESC  = $PAGE_DESC ?? 'Shop luxury soaps, shower gels and body lotions from Le Labo and Byredo. Free delivery and a complimentary gift on qualifying orders.';
 $signedIn   = isset($AUTH) && $AUTH->valid;
+
+// Never let the browser serve a stale page (HTML is always freshly rendered).
+header('Cache-Control: no-cache, no-store, must-revalidate');
 ?><!DOCTYPE html>
 <html lang="en">
 <head>

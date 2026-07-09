@@ -9,7 +9,7 @@ $SEARCH_PRODUCTS = $SEARCH_PRODUCTS ?? [];
 <footer class="footer">
   <div class="footer__grid">
     <div class="footer__lead">
-      <p class="footer__line">Keep the ritual of water.</p>
+      <p class="footer__line">Luxury bath &amp; body, delivered.</p>
       <form class="footer__signup" id="signupForm">
         <input type="email" placeholder="Email address" aria-label="Email address" required />
         <button type="submit">Join</button>
@@ -18,7 +18,7 @@ $SEARCH_PRODUCTS = $SEARCH_PRODUCTS ?? [];
     </div>
     <div class="footer__col">
       <h4>The Maison</h4>
-      <a href="/#ritual">Our Philosophy</a><a href="/#journal">The Journal</a><a href="/#collection">Brands</a><a href="/account">Account</a>
+      <a href="/#collection">Shop all</a><a href="/#collection" data-cat="Soap">Soaps</a><a href="/#journal">The Journal</a><a href="/account">Account</a>
     </div>
     <div class="footer__col">
       <h4>Shop</h4>
