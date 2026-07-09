@@ -26,9 +26,9 @@ require __DIR__ . '/utils/layout/header.php';
   <section class="hero">
     <span class="hero__ref reveal">Le Labo · Byredo · &amp; more</span>
     <div class="hero__inner">
-      <p class="eyebrow reveal">The most coveted bath &amp; body — fast, tracked delivery</p>
-      <h1 class="hero__title reveal" data-delay="1">The world's most <em>coveted</em><br />bath &amp; body.</h1>
-      <p class="hero__lede reveal" data-delay="2">Shop cult shower gels, body lotions and soaps from the most sought-after houses — Le&nbsp;Labo, Byredo and more. A complimentary gift on every order over <?= giftThresholdLabel() ?>.</p>
+      <p class="eyebrow reveal">Luxury bath &amp; body — honestly priced</p>
+      <h1 class="hero__title reveal" data-delay="1">Luxury amenities,<br />made <em>affordable</em>.</h1>
+      <p class="hero__lede reveal" data-delay="2">The cult soaps, shower gels and lotions of Le&nbsp;Labo, Byredo and more — the names you covet, at prices you don't expect. A complimentary gift on every order over <?= giftThresholdLabel() ?>.</p>
       <div class="hero__actions reveal" data-delay="3">
         <a href="#collection" class="btn btn--primary">Shop now</a>
         <a href="#collection" class="btn btn--ghost">View the collection →</a>
@@ -56,11 +56,11 @@ require __DIR__ . '/utils/layout/header.php';
   </section>
 
   <section class="band" id="journal">
-    <span class="band__ref reveal">N° 03 — The Journal</span>
+    <span class="band__ref reveal">Why Maison Des Bains</span>
     <blockquote class="band__quote reveal" data-delay="1">
-      “The bath is the last room that asks nothing of you. We furnish it with the finest houses in the world, and then we leave you alone.”
+      The same coveted soaps, gels and lotions the great houses are known for — at prices that finally make sense.
     </blockquote>
-    <a href="#collection" class="btn btn--onink reveal" data-delay="2">Read the Journal</a>
+    <a href="#collection" class="btn btn--onink reveal" data-delay="2">Shop the collection</a>
   </section>
 
   <section class="edit" id="edit">
@@ -68,15 +68,15 @@ require __DIR__ . '/utils/layout/header.php';
       <span class="edit__mark">N° 12 / 100</span>
     </div>
     <div class="edit__copy">
-      <span class="secnum reveal">N° 04 — The Edit</span>
-      <h2 class="section-title reveal">The Grey Bath</h2>
-      <p class="reveal">An edit in ash, smoke and stone — the scents we reach for when the light goes low. Cool, quiet, and entirely without colour, in the manner of the house.</p>
+      <span class="secnum reveal">N° 04 — Honest Luxury</span>
+      <h2 class="section-title reveal">Luxury, without the markup.</h2>
+      <p class="reveal">The same houses you'll find on the grandest shelves — Le&nbsp;Labo, Byredo and more — for a fraction of what you'd expect to pay.</p>
       <ul class="edit__list">
-        <li class="reveal"><span>—</span> Triple-milled &amp; cold-processed</li>
-        <li class="reveal"><span>—</span> Selected, never manufactured</li>
-        <li class="reveal"><span>—</span> Wrapped by hand in unmarked paper</li>
+        <li class="reveal"><span>—</span> 100% genuine, every time</li>
+        <li class="reveal"><span>—</span> Amenity sizes, everyday prices</li>
+        <li class="reveal"><span>—</span> Gift wrapping whenever you'd like it</li>
       </ul>
-      <a href="#collection" class="btn btn--secondary reveal">View the edit</a>
+      <a href="#collection" class="btn btn--secondary reveal">Shop now</a>
     </div>
   </section>
 

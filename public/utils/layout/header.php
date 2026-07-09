@@ -4,8 +4,8 @@
  * optional $PAGE_TITLE and $PAGE_DESC. Requires $AUTH to be available
  * (include utils/Auth/Verify.php first) to reflect sign-in state.
  */
-$PAGE_TITLE = $PAGE_TITLE ?? 'Maison Des Bains — Le Labo & Byredo Bath & Body';
-$PAGE_DESC  = $PAGE_DESC ?? 'Shop luxury soaps, shower gels and body lotions from Le Labo and Byredo. Free delivery and a complimentary gift on qualifying orders.';
+$PAGE_TITLE = $PAGE_TITLE ?? 'Maison Des Bains — Luxury Amenities, Made Affordable';
+$PAGE_DESC  = $PAGE_DESC ?? 'Cult soaps, shower gels and body lotions from Le Labo, Byredo and more — the names you covet, at prices you don\'t expect.';
 $signedIn   = isset($AUTH) && $AUTH->valid;
 
 // Never let the browser serve a stale page (HTML is always freshly rendered).
@@ -23,7 +23,7 @@ header('Cache-Control: no-cache, no-store, must-revalidate');
 <body>
 
 <div class="announce announce--center">
-  <span>Fast, tracked delivery on every order</span>
+  <span>The names you covet, at prices you don't expect · a complimentary gift over <?= giftThresholdLabel() ?></span>
 </div>
 
 <header class="header" id="header">

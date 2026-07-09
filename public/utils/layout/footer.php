@@ -9,7 +9,7 @@ $SEARCH_PRODUCTS = $SEARCH_PRODUCTS ?? [];
 <footer class="footer">
   <div class="footer__grid">
     <div class="footer__lead">
-      <p class="footer__line">Luxury bath &amp; body, delivered.</p>
+      <p class="footer__line">Luxury amenities, made affordable.</p>
       <form class="footer__signup" id="signupForm">
         <input type="email" placeholder="Email address" aria-label="Email address" required />
         <button type="submit">Join</button>

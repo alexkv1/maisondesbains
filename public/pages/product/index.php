@@ -108,9 +108,9 @@ require $root . '/utils/layout/header.php';
       </div>
 
       <ul class="product__meta-list">
-        <li><span>—</span> Fast, tracked delivery</li>
-        <li><span>—</span> Wrapped by hand in unmarked paper</li>
-        <li><span>—</span> Selected by the Maison, never manufactured</li>
+        <li><span>—</span> 100% genuine Le Labo, Byredo &amp; more</li>
+        <li><span>—</span> The same product, a better price</li>
+        <li><span>—</span> Add gift wrapping at checkout</li>
       </ul>
     </div>
   </div>
